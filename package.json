@@ -1,0 +1,28 @@
+{
+  "name": "naive-noise",
+  "version": "0.0.0",
+  "description": "Naive implementation of the Noise Protocol Framework",
+  "main": "index.js",
+  "dependencies": {
+    "nanoassert": "^1.1.0",
+    "sodium-native": "^2.1.5"
+  },
+  "devDependencies": {
+    "standard": "^11.0.1",
+    "tape": "^4.9.0"
+  },
+  "scripts": {
+    "test": "tape test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emilbayes/naive-noise.git"
+  },
+  "keywords": [],
+  "author": "Emil Bay <github@tixz.dk>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emilbayes/naive-noise/issues"
+  },
+  "homepage": "https://github.com/emilbayes/naive-noise#readme"
+}
