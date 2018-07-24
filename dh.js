@@ -9,44 +9,43 @@ module.exports = {
   DHLEN,
   PKLEN,
   SKLEN,
-  keypair,
+  generateKeypair,
   initiator,
   responder
 }
 
-function keypair (pk, sk) {
+function generateKeypair (pk, sk) {
   assert(pk.byteLength === PKLEN)
   assert(sk.byteLength === SKLEN)
   sodium.crypto_kx_keypair(pk, sk)
 }
 
-function initiator (output, keypair, pk) {
+function initiator (output, lpk, lsk, pk) {
   assert(output.byteLength === DHLEN)
-  assert(keypair.pk.byteLength === PKLEN)
-  assert(keypair.sk.byteLength === SKLEN)
+  assert(lpk.byteLength === PKLEN)
+  assert(lsk.byteLength === SKLEN)
   assert(pk.byteLength === PKLEN)
 
   sodium.crypto_kx_client_session_keys(
     output.subarray(DHLEN * 1 / 2, DHLEN * 2 / 2),
     output.subarray(DHLEN * 0 / 2, DHLEN * 1 / 2),
-    keypair.pk,
-    keypair.sk,
+    lpk,
+    lsk,
     pk
   )
 }
 
-function responder (output, keypair, pk) {
+function responder (output, lpk, lsk, pk) {
   assert(output.byteLength === DHLEN)
-  assert(output.byteLength === DHLEN)
-  assert(keypair.pk.byteLength === PKLEN)
-  assert(keypair.sk.byteLength === SKLEN)
+  assert(lpk.byteLength === PKLEN)
+  assert(lsk.byteLength === SKLEN)
   assert(pk.byteLength === PKLEN)
 
   sodium.crypto_kx_server_session_keys(
     output.subarray(DHLEN * 0 / 2, DHLEN * 1 / 2),
     output.subarray(DHLEN * 1 / 2, DHLEN * 2 / 2),
-    keypair.pk,
-    keypair.sk,
+    lpk,
+    lsk,
     pk
   )
 }
