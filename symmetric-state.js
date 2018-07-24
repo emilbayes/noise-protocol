@@ -38,7 +38,7 @@ function initializeSymmetric (state, protocolName) {
   cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), null)
 }
 
-var TempKey = Buffer.alloc(HASHLEN)
+var TempKey = sodium.sodium_malloc(HASHLEN)
 function mixKey (state, inputKeyMaterial) {
   assert(state.byteLength === STATELEN)
 
@@ -63,7 +63,7 @@ function mixHash (state, data) {
   hash.hash(h, [h, data])
 }
 
-var TempHash = Buffer.alloc(HASHLEN)
+var TempHash = sodium.sodium_malloc(HASHLEN)
 function mixKeyAndHash (state, inputKeyMaterial) {
   assert(state.byteLength === STATELEN)
 
@@ -120,8 +120,8 @@ function decryptAndHash (state, plaintext, ciphertext) {
 }
 decryptAndHash.bytes = 0
 
-var TempKey1 = Buffer.alloc(HASHLEN)
-var TempKey2 = Buffer.alloc(HASHLEN)
+var TempKey1 = sodium.sodium_malloc(HASHLEN)
+var TempKey2 = sodium.sodium_malloc(HASHLEN)
 var zerolen = Buffer.alloc(0)
 function split (state, cipherstate1, cipherstate2) {
   assert(state.byteLength === STATELEN)
