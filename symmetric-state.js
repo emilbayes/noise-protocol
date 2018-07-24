@@ -100,8 +100,10 @@ function encryptAndHash (state, ciphertext, plaintext) {
   var h = state.subarray(HASH_BEGIN, HASH_END)
 
   cipherState.encryptWithAd(cstate, ciphertext, h, plaintext)
+  encryptAndHash.bytes = cipherState.encryptWithAd.bytes
   mixHash(state, ciphertext)
 }
+encryptAndHash.bytes = 0
 
 // plaintext is the output here
 function decryptAndHash (state, plaintext, ciphertext) {
@@ -113,8 +115,10 @@ function decryptAndHash (state, plaintext, ciphertext) {
   var h = state.subarray(HASH_BEGIN, HASH_END)
 
   cipherState.decryptWithAd(cstate, plaintext, h, ciphertext)
+  decryptAndHash.bytes = cipherState.decryptWithAd.bytes
   mixHash(state, ciphertext)
 }
+decryptAndHash.bytes = 0
 
 var TempKey1 = Buffer.alloc(HASHLEN)
 var TempKey2 = Buffer.alloc(HASHLEN)

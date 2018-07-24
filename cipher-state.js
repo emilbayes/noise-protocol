@@ -65,10 +65,12 @@ function encryptWithAd (state, out, ad, plaintext) {
     ad,
     plaintext
   )
+  encryptWithAd.bytes = cipher.encrypt.bytes
 
   sodium.sodium_increment(n)
   if (sodium.sodium_memcmp(n, maxnonce)) throw new Error()
 }
+encryptWithAd.bytes = 0
 
 function decryptWithAd (state, out, ad, ciphertext) {
   assert(state.byteLength === STATELEN)
@@ -88,13 +90,17 @@ function decryptWithAd (state, out, ad, ciphertext) {
     ad,
     ciphertext
   )
+  decryptWithAd.bytes = cipher.decrypt.bytes
 
   sodium.sodium_increment(n)
 }
+decryptWithAd.bytes = 0
 
 function rekey (state) {
   assert(state.byteLength === STATELEN)
 
   var k = state.subarray(KEY_BEGIN, KEY_END)
   cipher.rekey(k, k)
+  rekey.bytes = cipher.rekey.bytes
 }
+rekey.bytes = 0
