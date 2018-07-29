@@ -1,6 +1,7 @@
 var sodium = require('sodium-native')
 var assert = require('nanoassert')
 var hmacBlake2b = require('hmac-blake2b')
+var dh = require('./dh')
 
 var HASHLEN = 64
 var BLOCKLEN = 128
