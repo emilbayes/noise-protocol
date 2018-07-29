@@ -34,6 +34,8 @@ function hkdf (out1, out2, out3, chainingKey, inputKeyMaterial) {
   assert(out1.byteLength === HASHLEN)
   assert(out2.byteLength === HASHLEN)
   assert(out3 == null ? true : out3.byteLength === HASHLEN)
+  assert(chainingKey.byteLength === HASHLEN)
+  assert([0, 32, dh.DHLEN, dh.PKLEN].includes(inputKeyMaterial.byteLength))
 
   sodium.sodium_memzero(TempKey)
   hmac(TempKey, chainingKey, [inputKeyMaterial])

@@ -41,6 +41,7 @@ function initializeSymmetric (state, protocolName) {
 var TempKey = sodium.sodium_malloc(HASHLEN)
 function mixKey (state, inputKeyMaterial) {
   assert(state.byteLength === STATELEN)
+  assert(inputKeyMaterial.byteLength != null)
 
   hash.HKDF(
     state.subarray(CHAINING_KEY_BEGIN, CHAINING_KEY_END),
@@ -66,6 +67,7 @@ function mixHash (state, data) {
 var TempHash = sodium.sodium_malloc(HASHLEN)
 function mixKeyAndHash (state, inputKeyMaterial) {
   assert(state.byteLength === STATELEN)
+  assert(inputKeyMaterial.byteLength != null)
 
   hash.HKDF(
     state.subarray(CHAINING_KEY_BEGIN, CHAINING_KEY_END),

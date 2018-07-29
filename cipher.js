@@ -20,10 +20,11 @@ function encrypt (out, k, n, ad, plaintext) {
   assert(out.byteLength >= plaintext.byteLength + TAGLEN, 'output buffer must be at least plaintext plus TAGLEN bytes long')
   assert(k.byteLength === KEYLEN)
   assert(n.byteLength === NONCELEN)
-  assert(ad == null ? true : Buffer.isBuffer(ad))
+  assert(ad == null ? true : ad.byteLength != null)
   sodium.sodium_memzero(ElongatedNonce)
 
   ElongatedNonce.set(n, 16)
+
   encrypt.bytes = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(out, plaintext, ad, null, ElongatedNonce, k)
   sodium.sodium_memzero(ElongatedNonce)
 }
@@ -33,10 +34,11 @@ function decrypt (out, k, n, ad, ciphertext) {
   assert(out.byteLength >= ciphertext.byteLength - TAGLEN)
   assert(k.byteLength === KEYLEN)
   assert(n.byteLength === NONCELEN)
-  assert(ad == null ? true : Buffer.isBuffer(ad))
+  assert(ad == null ? true : ad.byteLength != null)
   sodium.sodium_memzero(ElongatedNonce)
 
   ElongatedNonce.set(n, 16)
+
   decrypt.bytes = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(out, null, ciphertext, ad, ElongatedNonce, k)
   sodium.sodium_memzero(ElongatedNonce)
 }

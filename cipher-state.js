@@ -49,6 +49,8 @@ function setNonce (state, nonce) {
 var maxnonce = Buffer.alloc(8, 0xff)
 function encryptWithAd (state, out, ad, plaintext) {
   assert(state.byteLength === STATELEN)
+  assert(out.byteLength != null)
+  assert(plaintext.byteLength != null)
 
   var n = state.subarray(NONCE_BEGIN, NONCE_END)
   if (sodium.sodium_memcmp(n, maxnonce)) throw new Error('Nonce overflow')
@@ -74,6 +76,8 @@ encryptWithAd.bytes = 0
 
 function decryptWithAd (state, out, ad, ciphertext) {
   assert(state.byteLength === STATELEN)
+  assert(out.byteLength != null)
+  assert(ciphertext.byteLength != null)
 
   var n = state.subarray(NONCE_BEGIN, NONCE_END)
   if (sodium.sodium_memcmp(n, maxnonce)) throw new Error('Nonce overflow')
