@@ -17,7 +17,7 @@ module.exports = {
 var ElongatedNonce = sodium.sodium_malloc(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES)
 sodium.sodium_memzero(ElongatedNonce)
 function encrypt (out, k, n, ad, plaintext) {
-  assert(out.byteLength === plaintext.byteLength + TAGLEN)
+  assert(out.byteLength >= plaintext.byteLength + TAGLEN, 'output buffer must be at least plaintext plus TAGLEN bytes long')
   assert(k.byteLength === KEYLEN)
   assert(n.byteLength === NONCELEN)
   assert(ad == null ? true : Buffer.isBuffer(ad))
@@ -30,7 +30,7 @@ function encrypt (out, k, n, ad, plaintext) {
 encrypt.bytes = 0
 
 function decrypt (out, k, n, ad, ciphertext) {
-  assert(out.byteLength === ciphertext.byteLength - TAGLEN)
+  assert(out.byteLength >= ciphertext.byteLength - TAGLEN)
   assert(k.byteLength === KEYLEN)
   assert(n.byteLength === NONCELEN)
   assert(ad == null ? true : Buffer.isBuffer(ad))
