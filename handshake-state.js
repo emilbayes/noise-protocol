@@ -1,6 +1,7 @@
 var sodium = require('sodium-native')
 var assert = require('nanoassert')
 var symmetricState = require('./symmetric-state')
+var cipherState = require('./cipher-state')
 var dh = require('./dh')
 
 module.exports = {
@@ -32,14 +33,31 @@ var PATTERNS = Object.freeze({
       initiator: [],
       responder: []
     },
-    messagePatterns: {
-      initiator: [
-        ['e']
-      ],
-      responder: [
-        ['e', 'ee']
-      ]
-    }
+    messagePatterns: [
+      [true, 'e'],
+      [false, 'e', 'ee']
+    ]
+  },
+  XX: {
+    premessages: {
+      initiator: [],
+      responder: []
+    },
+    messagePatterns: [
+      [true, 'e'],
+      [false, 'e', 'ee', 's', 'es'],
+      [true, 's', 'se']
+    ]
+  },
+  KK: {
+    premessages: {
+      initiator: ['s'],
+      responder: ['s']
+    },
+    messagePatterns: [
+      [true, 'e', 'es', 'ss'],
+      [false, 'e', 'ee', 'se']
+    ]
   }
 })
 
@@ -61,7 +79,7 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
 
   var protocolName = Buffer.from(`Noise_${handshakePattern}_25519_ChaChaPoly_BLAKE2b`)
 
-  symmetricState.InitializeSymmetric(state.symmetricState, protocolName)
+  symmetricState.initializeSymmetric(state.symmetricState, protocolName)
   symmetricState.mixHash(state.symmetricState, prologue)
 
   state.initiator = initiator
@@ -81,6 +99,7 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
 
   // hashing
   var pat = PATTERNS[handshakePattern]
+
   for (var initiatorToken of pat.premessages.initiator) {
     switch (initiatorToken) {
       case 'e':
@@ -123,18 +142,21 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
     }
   }
 
-  state.messagePatterns = clone(pat[state.initator ? 'initator' : 'responder'].messagePatterns)
+  state.messagePatterns = clone(pat.messagePatterns)
 
   return state
 }
 
+var DhResult = sodium.sodium_malloc(dh.DHLEN)
 function writeMessage (state, payload, messageBuffer) {
   assert(state instanceof HandshakeState)
   assert(payload.byteLength != null)
   assert(messageBuffer.byteLength != null)
 
-  var mpat = state.messagePatterns.unshift()
+  var mpat = state.messagePatterns.shift()
   var moffset = 0
+
+  assert(mpat.shift() === state.initiator)
 
   for (var token of mpat) {
     switch (token) {
@@ -163,10 +185,31 @@ function writeMessage (state, payload, messageBuffer) {
         break
 
       case 'ee':
+        dh[state.initator ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
+        symmetricState.mixKey(state.symmetricState, DhResult)
+        sodium.sodium_memzero(DhResult)
+        break
       case 'es':
+        if (state.initator) dh.initiator(DhResult, state.epk, state.esk, state.rs)
+        else dh.responder(DhResult, state.spk, state.ssk, state.re)
+
+        symmetricState.mixKey(state.symmetricState, DhResult)
+        sodium.sodium_memzero(DhResult)
+        break
       case 'se':
+        if (state.initator) dh.initiator(DhResult, state.spk, state.ssk, state.re)
+        else dh.responder(DhResult, state.epk, state.esk, state.rs)
+
+        symmetricState.mixKey(state.symmetricState, DhResult)
+        sodium.sodium_memzero(DhResult)
+        break
       case 'ss':
-        throw new Error('todo')
+        if (state.initator) dh.initiator(DhResult, state.spk, state.ssk, state.rs)
+        else dh.responder(DhResult, state.spk, state.ssk, state.rs)
+
+        symmetricState.mixKey(state.symmetricState, DhResult)
+        sodium.sodium_memzero(DhResult)
+        break
 
       default:
         throw new Error('Invalid message pattern')
@@ -178,9 +221,9 @@ function writeMessage (state, payload, messageBuffer) {
 
   writeMessage.bytes = moffset
 
-  if (state.messagePatterns === 0) {
-    var tx = sodium.sodium_malloc(symmetricState.STATELEN)
-    var rx = sodium.sodium_malloc(symmetricState.STATELEN)
+  if (state.messagePatterns.length === 0) {
+    var tx = sodium.sodium_malloc(cipherState.STATELEN)
+    var rx = sodium.sodium_malloc(cipherState.STATELEN)
     symmetricState.split(state.symmetricState, tx, rx)
 
     return {tx, rx}
@@ -188,11 +231,99 @@ function writeMessage (state, payload, messageBuffer) {
 }
 writeMessage.bytes = 0
 
+var Temp = sodium.sodium_malloc(dh.PKLEN + 16)
 function readMessage (state, message, payloadBuffer) {
   assert(state instanceof HandshakeState)
   assert(message.byteLength != null)
   assert(payloadBuffer.byteLength != null)
+
+  var mpat = state.messagePatterns.shift()
+  var moffset = 0
+
+  assert(mpat.shift() === !state.initiator)
+
+  for (var token of mpat) {
+    switch (token) {
+      case 'e':
+        assert(state.re == null)
+        assert(message.byteLength - moffset >= dh.PKLEN)
+
+        // PKLEN instead of DHLEN since they are different in out case
+        state.re = sodium.sodium_malloc(dh.PKLEN)
+        state.re.set(message.subarray(moffset, moffset + dh.PKLEN))
+        moffset += dh.PKLEN
+
+        symmetricState.mixHash(state.symmetricState, state.re)
+
+        break
+
+      case 's':
+        assert(state.rs.byteLength == null)
+        state.rs = sodium.sodium_malloc(dh.PKLEN)
+
+        var bytes = 0
+        if (symmetricState.hasKey(state.symmetricState)) {
+          bytes = dh.PKLEN + 16
+        } else {
+          bytes = dh.PKLEN
+        }
+
+        assert(message.byteLength - moffset >= bytes)
+        Temp.set(message.subarray(moffset, moffset + bytes))
+
+        symmetricState.decryptAndHash(state.symmetricState, state.rs, Temp.subarray(0, bytes))
+        sodium.sodium_memzero(Temp)
+
+        assert(symmetricState.decryptAndHash.bytes === bytes)
+        moffset += symmetricState.decryptAndHash.bytes
+
+        break
+      case 'ee':
+        dh[state.initator ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
+        symmetricState.mixKey(state.symmetricState, DhResult)
+        sodium.sodium_memzero(DhResult)
+        break
+      case 'es':
+        if (state.initator) dh.initiator(DhResult, state.epk, state.esk, state.rs)
+        else dh.responder(DhResult, state.spk, state.ssk, state.re)
+
+        symmetricState.mixKey(state.symmetricState, DhResult)
+        sodium.sodium_memzero(DhResult)
+        break
+      case 'se':
+        if (state.initator) dh.initiator(DhResult, state.spk, state.ssk, state.re)
+        else dh.responder(DhResult, state.epk, state.esk, state.rs)
+
+        symmetricState.mixKey(state.symmetricState, DhResult)
+        sodium.sodium_memzero(DhResult)
+        break
+      case 'ss':
+        if (state.initator) dh.initiator(DhResult, state.spk, state.ssk, state.rs)
+        else dh.responder(DhResult, state.spk, state.ssk, state.rs)
+
+        symmetricState.mixKey(state.symmetricState, DhResult)
+        sodium.sodium_memzero(DhResult)
+        break
+
+      default:
+        throw new Error('Invalid message pattern')
+    }
+  }
+
+  symmetricState.decryptAndHash(state.symmetricState, payloadBuffer, message.subarray(moffset))
+  moffset += symmetricState.encryptAndHash.bytes
+
+  readMessage.bytes = moffset
+
+  if (state.messagePatterns.length === 0) {
+    var tx = sodium.sodium_malloc(cipherState.STATELEN)
+    var rx = sodium.sodium_malloc(cipherState.STATELEN)
+    symmetricState.split(state.symmetricState, tx, rx)
+
+    return {tx, rx}
+  }
 }
+readMessage.bytes = 0
 
 function clone (o) { // Good enough for now
   return JSON.parse(JSON.stringify(o))
