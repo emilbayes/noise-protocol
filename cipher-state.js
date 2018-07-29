@@ -71,7 +71,6 @@ function encryptWithAd (state, out, ad, plaintext) {
   encryptWithAd.bytes = cipher.encrypt.bytes
 
   sodium.sodium_increment(n)
-  if (sodium.sodium_memcmp(n, maxnonce)) throw new Error()
 }
 encryptWithAd.bytes = 0
 
