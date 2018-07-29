@@ -52,7 +52,7 @@ function mixKey (state, inputKeyMaterial) {
   )
 
   // HASHLEN is always 64 here, so we truncate to 32 bytes per the spec
-  cipherState.initializeKey(TempKey.subarray(0, 32))
+  cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), TempKey.subarray(0, 32))
   sodium.sodium_memzero(TempKey)
 }
 
@@ -81,7 +81,7 @@ function mixKeyAndHash (state, inputKeyMaterial) {
   sodium.sodium_memzero(TempHash)
 
   // HASHLEN is always 64 here, so we truncate to 32 bytes per the spec
-  cipherState.initializeKey(TempKey.subarray(0, 32))
+  cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), TempKey.subarray(0, 32))
   sodium.sodium_memzero(TempKey)
 }
 
@@ -139,8 +139,8 @@ function split (state, cipherstate1, cipherstate2) {
   )
 
   // HASHLEN is always 64 here, so we truncate to 32 bytes per the spec
-  cipherstate1.initializeKey(TempKey1.subarray(0, 32))
-  cipherstate2.initializeKey(TempKey2.subarray(0, 32))
+  cipherState.initializeKey(cipherstate1, TempKey1.subarray(0, 32))
+  cipherState.initializeKey(cipherstate2, TempKey2.subarray(0, 32))
   sodium.sodium_memzero(TempKey1)
   sodium.sodium_memzero(TempKey2)
 }
