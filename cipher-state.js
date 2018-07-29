@@ -57,6 +57,7 @@ function encryptWithAd (state, out, ad, plaintext) {
 
   if (hasKey(state) === false) {
     out.set(plaintext)
+    encryptWithAd.bytes = plaintext.byteLength
     return
   }
 
@@ -84,6 +85,7 @@ function decryptWithAd (state, out, ad, ciphertext) {
 
   if (hasKey(state) === false) {
     out.set(ciphertext)
+    decryptWithAd.bytes = ciphertext.byteLength
     return
   }
 
