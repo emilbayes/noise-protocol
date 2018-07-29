@@ -5,7 +5,6 @@ var hmacBlake2b = require('hmac-blake2b')
 var HASHLEN = 64
 var BLOCKLEN = 128
 
-console.log(hmacBlake2b.BLOCKLEN, BLOCKLEN)
 assert(hmacBlake2b.BLOCKLEN === BLOCKLEN, 'mismatching hmac BLOCKLEN')
 assert(hmacBlake2b.HASHLEN === HASHLEN, 'mismatching hmac HASHLEN')
 
