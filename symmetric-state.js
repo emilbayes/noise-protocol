@@ -43,7 +43,7 @@ function mixKey (state, inputKeyMaterial) {
   assert(state.byteLength === STATELEN)
   assert(inputKeyMaterial.byteLength != null)
 
-  hash.HKDF(
+  hash.hkdf(
     state.subarray(CHAINING_KEY_BEGIN, CHAINING_KEY_END),
     TempKey,
     null,
@@ -69,7 +69,7 @@ function mixKeyAndHash (state, inputKeyMaterial) {
   assert(state.byteLength === STATELEN)
   assert(inputKeyMaterial.byteLength != null)
 
-  hash.HKDF(
+  hash.hkdf(
     state.subarray(CHAINING_KEY_BEGIN, CHAINING_KEY_END),
     TempHash,
     TempKey,
@@ -130,7 +130,7 @@ function split (state, cipherstate1, cipherstate2) {
   assert(cipherstate1.byteLength === cipherState.STATELEN)
   assert(cipherstate2.byteLength === cipherState.STATELEN)
 
-  hash.HKDF(
+  hash.hkdf(
     TempKey1,
     TempKey2,
     null,
