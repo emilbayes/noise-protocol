@@ -5,8 +5,8 @@ var hmacBlake2b = require('hmac-blake2b')
 var HASHLEN = 64
 var BLOCKLEN = 128
 
-assert(hmacBlake2b.BLOCKLEN === BLOCKLEN, 'mismatching hmac BLOCKLEN')
-assert(hmacBlake2b.HASHLEN === HASHLEN, 'mismatching hmac HASHLEN')
+assert(hmacBlake2b.KEYBYTES === BLOCKLEN, 'mismatching hmac BLOCKLEN')
+assert(hmacBlake2b.BYTES === HASHLEN, 'mismatching hmac HASHLEN')
 
 module.exports = {
   HASHLEN,
