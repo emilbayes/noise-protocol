@@ -31,7 +31,7 @@ function initializeSymmetric (state, protocolName) {
 
   sodium.sodium_memzero(state)
   if (protocolName.byteLength <= HASHLEN) state.set(protocolName, HASH_BEGIN)
-  else hash.hash(state.subarray(HASH_BEGIN, HASH_END), protocolName)
+  else hash.hash(state.subarray(HASH_BEGIN, HASH_END), [protocolName])
 
   state.subarray(CHAINING_KEY_BEGIN, CHAINING_KEY_END).set(state.subarray(HASH_BEGIN, HASH_END))
 

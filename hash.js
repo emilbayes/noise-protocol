@@ -17,8 +17,9 @@ module.exports = {
 
 function hash (out, data) {
   assert(out.byteLength === HASHLEN)
+  assert(Array.isArray(data))
 
-  sodium.crypto_generichash(out, data)
+  sodium.crypto_generichash_batch(out, data)
 }
 
 function hmac (out, key, data) {
