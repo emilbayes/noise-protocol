@@ -1,6 +1,6 @@
 var sodium = require('sodium-native')
 var assert = require('nanoassert')
-var cipherState = require('./cipherState')
+var cipherState = require('./cipher-state')
 var hash = require('./hash')
 
 var STATELEN = hash.HASHLEN + hash.HASHLEN + cipherState.STATELEN
