@@ -266,7 +266,6 @@ function readMessage (state, message, payloadBuffer) {
         symmetricState.decryptAndHash(state.symmetricState, state.rs, Temp.subarray(0, bytes))
         sodium.sodium_memzero(Temp)
 
-        assert(symmetricState.decryptAndHash.bytes === bytes)
         moffset += symmetricState.decryptAndHash.bytes
 
         break
