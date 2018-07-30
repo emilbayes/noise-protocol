@@ -110,12 +110,6 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
         assert(state.initiator ? state.spk.byteLength != null : state.rs.byteLength != null)
         symmetricState.mixHash(state.symmetricState, state.initiator ? state.spk : state.rs)
         break
-      case 'e, s':
-        assert(state.initiator ? state.epk.byteLength != null : state.re.byteLength != null)
-        assert(state.initiator ? state.spk.byteLength != null : state.rs.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initiator ? state.epk : state.re)
-        symmetricState.mixHash(state.symmetricState, state.initiator ? state.spk : state.rs)
-        break
       default:
         throw new Error('Invalid premessage pattern for initiator')
     }
@@ -129,12 +123,6 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
         break
       case 's':
         assert(state.initiator ? state.rs.byteLength != null : state.spk.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initiator ? state.rs : state.spk)
-        break
-      case 'e, s':
-        assert(state.initiator ? state.re.byteLength != null : state.epk.byteLength != null)
-        assert(state.initiator ? state.rs.byteLength != null : state.spk.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initiator ? state.re : state.epk)
         symmetricState.mixHash(state.symmetricState, state.initiator ? state.rs : state.spk)
         break
       default:
