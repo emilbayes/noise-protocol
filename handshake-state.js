@@ -197,8 +197,7 @@ function writeMessage (state, payload, messageBuffer) {
         sodium.sodium_memzero(DhResult)
         break
       case 'ss':
-        if (state.initiator) dh.initiator(DhResult, state.spk, state.ssk, state.rs)
-        else dh.responder(DhResult, state.spk, state.ssk, state.rs)
+        dh[state.initiator ? 'initiator' : 'responder'](DhResult, state.spk, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
@@ -291,8 +290,7 @@ function readMessage (state, message, payloadBuffer) {
         sodium.sodium_memzero(DhResult)
         break
       case 'ss':
-        if (state.initiator) dh.initiator(DhResult, state.spk, state.ssk, state.rs)
-        else dh.responder(DhResult, state.spk, state.ssk, state.rs)
+        dh[state.initiator ? 'initiator' : 'responder'](DhResult, state.spk, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
