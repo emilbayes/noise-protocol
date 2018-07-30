@@ -5,6 +5,11 @@ var KEYLEN = 32
 var NONCELEN = 8
 var TAGLEN = 16
 
+assert(sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES === KEYLEN)
+// 16 bytes are cut off in the following functions
+assert(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES === 16 + NONCELEN)
+assert(sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES === TAGLEN)
+
 module.exports = {
   KEYLEN,
   NONCELEN,
