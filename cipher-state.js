@@ -61,9 +61,11 @@ function encryptWithAd (state, out, ad, plaintext) {
     return
   }
 
+  var k = state.subarray(KEY_BEGIN, KEY_END)
+
   cipher.encrypt(
     out,
-    state.subarray(KEY_BEGIN, KEY_END),
+    k,
     n,
     ad,
     plaintext
@@ -88,9 +90,11 @@ function decryptWithAd (state, out, ad, ciphertext) {
     return
   }
 
+  var k = state.subarray(KEY_BEGIN, KEY_END)
+
   cipher.decrypt(
     out,
-    state.subarray(KEY_BEGIN, KEY_END),
+    k,
     n,
     ad,
     ciphertext
