@@ -30,3 +30,5 @@ console.log(server, serverTx)
 
 noise.readMessage(client, serverTx.subarray(0, noise.writeMessage.bytes), clientRx)
 console.log(client, clientRx)
+noise.destroy(client)
+noise.destroy(server)

@@ -37,6 +37,13 @@ Create a new Noise handshake instance with:
 
 ### `noise.readMessage.bytes`
 
+
+### `noise.destroy(state)`
+
+Takes a `HandshakeState` and destroys all internal data (eg. securely zeros out
+data contained in Buffer-like objects and resets state). Use this to dispose of
+state objects after connection has been established or upon error
+
 ### `noise.PKLEN`
 
 ### `noise.SKLEN`

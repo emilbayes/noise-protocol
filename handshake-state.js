@@ -11,6 +11,7 @@ module.exports = {
   initialize,
   writeMessage,
   readMessage,
+  destroy,
   SKLEN,
   PKLEN
 }
@@ -315,6 +316,47 @@ function readMessage (state, message, payloadBuffer) {
   }
 }
 readMessage.bytes = 0
+
+function destroy (state) {
+  if (state.symmetricState != null) {
+    sodium.sodium_memzero(state.symmetricState)
+    state.symmetricState = null
+  }
+
+  state.initiator = null
+
+  if (state.spk != null) {
+    sodium.sodium_memzero(state.spk)
+    state.spk = null
+  }
+
+  if (state.ssk != null) {
+    sodium.sodium_memzero(state.ssk)
+    state.ssk = null
+  }
+
+  if (state.epk != null) {
+    sodium.sodium_memzero(state.epk)
+    state.epk = null
+  }
+
+  if (state.esk != null) {
+    sodium.sodium_memzero(state.esk)
+    state.esk = null
+  }
+
+  if (state.rs != null) {
+    sodium.sodium_memzero(state.rs)
+    state.rs = null
+  }
+
+  if (state.re != null) {
+    sodium.sodium_memzero(state.re)
+    state.re = null
+  }
+
+  state.messagePatterns = null
+}
 
 function clone (o) { // Good enough for now
   return JSON.parse(JSON.stringify(o))
