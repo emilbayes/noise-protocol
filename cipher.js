@@ -30,10 +30,13 @@ function encrypt (out, k, n, ad, plaintext) {
 
   ElongatedNonce.set(n, 16)
 
-  encrypt.bytes = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(out, plaintext, ad, null, ElongatedNonce, k)
+  encrypt.bytesWritten = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(out, plaintext, ad, null, ElongatedNonce, k)
+  encrypt.bytesRead = encrypt.bytesWritten - MACLEN
+
   sodium.sodium_memzero(ElongatedNonce)
 }
-encrypt.bytes = 0
+encrypt.bytesWritten = 0
+encrypt.bytesRead = 0
 
 function decrypt (out, k, n, ad, ciphertext) {
   assert(out.byteLength >= ciphertext.byteLength - MACLEN)
@@ -44,12 +47,13 @@ function decrypt (out, k, n, ad, ciphertext) {
 
   ElongatedNonce.set(n, 16)
 
-  decrypt.bytes = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(out, null, ciphertext, ad, ElongatedNonce, k)
-  decrypt.bytes += MACLEN
+  decrypt.bytesWritten = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(out, null, ciphertext, ad, ElongatedNonce, k)
+  decrypt.bytesRead = decrypt.bytesWritten + MACLEN
 
   sodium.sodium_memzero(ElongatedNonce)
 }
-decrypt.bytes = 0
+decrypt.bytesWritten = 0
+decrypt.bytesRead = 0
 
 var maxnonce = Buffer.alloc(8, 0xff)
 var zerolen = Buffer.alloc(0)
@@ -64,8 +68,10 @@ function rekey (out, k) {
 
   IntermediateKey.set(k)
   encrypt(IntermediateKey, k, maxnonce, zerolen, zeros)
-  rekey.bytes = encrypt.bytes
+  rekey.bytesWritten = encrypt.bytesWritten
+  rekey.bytesRead = encrypt.bytesRead
   out.set(IntermediateKey.subarray(0, KEYLEN))
   sodium.sodium_memzero(IntermediateKey)
 }
-rekey.bytes = 0
+rekey.bytesWritten = 0
+rekey.bytesRead = 0

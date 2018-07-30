@@ -60,7 +60,8 @@ function encryptWithAd (state, out, ad, plaintext) {
 
   if (hasKey(state) === false) {
     out.set(plaintext)
-    encryptWithAd.bytes = plaintext.byteLength
+    encryptWithAd.bytesRead = plaintext.byteLength
+    encryptWithAd.bytesWritten = encryptWithAd.bytesRead
     return
   }
 
@@ -73,11 +74,13 @@ function encryptWithAd (state, out, ad, plaintext) {
     ad,
     plaintext
   )
-  encryptWithAd.bytes = cipher.encrypt.bytes
+  encryptWithAd.bytesRead = cipher.encrypt.bytesRead
+  encryptWithAd.bytesWritten = cipher.encrypt.bytesWritten
 
   sodium.sodium_increment(n)
 }
-encryptWithAd.bytes = 0
+encryptWithAd.bytesRead = 0
+encryptWithAd.bytesWritten = 0
 
 function decryptWithAd (state, out, ad, ciphertext) {
   assert(state.byteLength === STATELEN)
@@ -89,7 +92,8 @@ function decryptWithAd (state, out, ad, ciphertext) {
 
   if (hasKey(state) === false) {
     out.set(ciphertext)
-    decryptWithAd.bytes = ciphertext.byteLength
+    decryptWithAd.bytesRead = ciphertext.byteLength
+    decryptWithAd.bytesWritten = decryptWithAd.bytesRead
     return
   }
 
@@ -102,17 +106,21 @@ function decryptWithAd (state, out, ad, ciphertext) {
     ad,
     ciphertext
   )
-  decryptWithAd.bytes = cipher.decrypt.bytes
+  decryptWithAd.bytesRead = cipher.decrypt.bytesRead
+  decryptWithAd.bytesWritten = cipher.decrypt.bytesWritten
 
   sodium.sodium_increment(n)
 }
-decryptWithAd.bytes = 0
+decryptWithAd.bytesRead = 0
+decryptWithAd.bytesWritten = 0
 
 function rekey (state) {
   assert(state.byteLength === STATELEN)
 
   var k = state.subarray(KEY_BEGIN, KEY_END)
   cipher.rekey(k, k)
-  rekey.bytes = cipher.rekey.bytes
+  rekey.bytesRead = cipher.rekey.bytesRead
+  rekey.bytesWritten = cipher.rekey.bytesWritten
 }
-rekey.bytes = 0
+rekey.bytesRead = 0
+rekey.bytesWritten = 0

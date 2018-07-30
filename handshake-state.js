@@ -186,7 +186,7 @@ function writeMessage (state, payload, messageBuffer) {
         assert(state.spk.byteLength === dh.PKLEN)
 
         symmetricState.encryptAndHash(state.symmetricState, messageBuffer.subarray(moffset), state.spk)
-        moffset += symmetricState.encryptAndHash.bytes
+        moffset += symmetricState.encryptAndHash.bytesWritten
 
         break
 
@@ -222,7 +222,7 @@ function writeMessage (state, payload, messageBuffer) {
   }
 
   symmetricState.encryptAndHash(state.symmetricState, messageBuffer.subarray(moffset), payload)
-  moffset += symmetricState.encryptAndHash.bytes
+  moffset += symmetricState.encryptAndHash.bytesWritten
 
   writeMessage.bytes = moffset
 
@@ -281,7 +281,7 @@ function readMessage (state, message, payloadBuffer) {
           message.subarray(moffset, moffset + bytes) // <- called temp in noise spec
         )
 
-        moffset += symmetricState.decryptAndHash.bytes
+        moffset += symmetricState.decryptAndHash.bytesRead
 
         break
       case 'ee':
@@ -318,7 +318,7 @@ function readMessage (state, message, payloadBuffer) {
   symmetricState.decryptAndHash(state.symmetricState, payloadBuffer, message.subarray(moffset))
 
   // How many bytes were written to payload (minus the TAG/MAC)
-  readMessage.bytes = symmetricState.decryptAndHash.bytes - cipherState.MACLEN
+  readMessage.bytes = symmetricState.decryptAndHash.bytesWritten
 
   if (state.messagePatterns.length === 0) {
     var tx = sodium.sodium_malloc(cipherState.STATELEN)
