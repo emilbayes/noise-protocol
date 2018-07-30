@@ -317,7 +317,7 @@ function readMessage (state, message, payloadBuffer) {
   symmetricState.decryptAndHash(state.symmetricState, payloadBuffer, message.subarray(moffset))
 
   // How many bytes were written to payload
-  readMessage.bytes = symmetricState.encryptAndHash.bytes
+  readMessage.bytes = symmetricState.encryptAndHash.bytes - cipherState.TAGLEN
 
   if (state.messagePatterns.length === 0) {
     var tx = sodium.sodium_malloc(cipherState.STATELEN)

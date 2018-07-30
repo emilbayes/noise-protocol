@@ -4,10 +4,12 @@ var cipher = require('./cipher')
 
 var STATELEN = cipher.KEYLEN + cipher.NONCELEN
 var NONCELEN = cipher.NONCELEN
+var TAGLEN = cipher.TAGLEN
 
 module.exports = {
   STATELEN,
   NONCELEN,
+  TAGLEN,
   initializeKey,
   hasKey,
   setNonce,
