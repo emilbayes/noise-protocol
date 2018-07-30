@@ -12,6 +12,7 @@ module.exports = {
   writeMessage,
   readMessage,
   destroy,
+  keygen,
   SKLEN,
   PKLEN
 }
@@ -368,6 +369,20 @@ function destroy (state) {
   }
 
   state.messagePatterns = null
+}
+
+function keygen (obj, sk) {
+  if (!obj) {
+    obj = {publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN)}
+    return keygen(obj)
+  }
+
+  if (obj.publicKey) {
+    dh.generateKeypair(obj.publicKey, obj.secretKey)
+    return obj
+  }
+
+  if (obj.byteLength != null) dh.generateKeypair(obj, sk)
 }
 
 function clone (o) { // Good enough for now
