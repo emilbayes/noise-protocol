@@ -60,6 +60,7 @@ npm install naive-noise
   client and server public key; `BLAKE2b-512(shared || client_pk || server_pk)`
 * Uses `crypto_aead_xchacha20poly1305_ietf_*` for symmetric cryptography with
   nonces `128-bit zero || 64-bit counter`, meaning the protocol name is `Noise_*_25519_XChaChaPoly_BLAKE2b`, with `*` being the handshake pattern
+* Names the 16 bytes for an authentication tag as `MACLEN`
 
 ## License
 
