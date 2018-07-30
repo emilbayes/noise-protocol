@@ -4,10 +4,15 @@ var symmetricState = require('./symmetric-state')
 var cipherState = require('./cipher-state')
 var dh = require('./dh')
 
+var PKLEN = dh.PKLEN
+var SKLEN = dh.SKLEN
+
 module.exports = {
   initialize,
   writeMessage,
-  readMessage
+  readMessage,
+  SKLEN,
+  PKLEN
 }
 
 function HandshakeState () {
@@ -77,7 +82,7 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
 
   var state = new HandshakeState()
 
-  var protocolName = Buffer.from(`Noise_${handshakePattern}_25519_ChaChaPoly_BLAKE2b`)
+  var protocolName = Buffer.from(`Noise_${handshakePattern}_25519_XChaChaPoly_BLAKE2b`)
 
   symmetricState.initializeSymmetric(state.symmetricState, protocolName)
   symmetricState.mixHash(state.symmetricState, prologue)
