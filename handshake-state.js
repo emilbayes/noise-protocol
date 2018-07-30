@@ -295,7 +295,7 @@ function readMessage (state, message, payloadBuffer) {
   if (state.messagePatterns.length === 0) {
     var tx = sodium.sodium_malloc(cipherState.STATELEN)
     var rx = sodium.sodium_malloc(cipherState.STATELEN)
-    symmetricState.split(state.symmetricState, tx, rx)
+    symmetricState.split(state.symmetricState, rx, tx)
 
     return {tx, rx}
   }
