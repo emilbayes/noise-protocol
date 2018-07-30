@@ -223,7 +223,6 @@ function writeMessage (state, payload, messageBuffer) {
 }
 writeMessage.bytes = 0
 
-var Temp = sodium.sodium_malloc(dh.PKLEN + 16)
 function readMessage (state, message, payloadBuffer) {
   assert(state instanceof HandshakeState)
   assert(message.byteLength != null)
@@ -261,10 +260,12 @@ function readMessage (state, message, payloadBuffer) {
         }
 
         assert(message.byteLength - moffset >= bytes)
-        Temp.set(message.subarray(moffset, moffset + bytes))
 
-        symmetricState.decryptAndHash(state.symmetricState, state.rs, Temp.subarray(0, bytes))
-        sodium.sodium_memzero(Temp)
+        symmetricState.decryptAndHash(
+          state.symmetricState,
+          state.rs,
+          message.subarray(moffset, moffset + bytes) // <- called temp in noise spec
+        )
 
         moffset += symmetricState.decryptAndHash.bytes
 
