@@ -1,5 +1,7 @@
 # `naive-noise`
 
+[![Build Status](https://travis-ci.org/emilbayes/naive-noise.svg?branch=master)](https://travis-ci.org/emilbayes/naive-noise)
+
 > Naive implementation of the Noise Protocol Framework
 
 :rotating_light: :warning: :rotating_light:

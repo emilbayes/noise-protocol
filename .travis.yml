@@ -1,0 +1,9 @@
+sudo: false
+notifications:
+  email: false
+language: node_js
+node_js:
+  - node
+  - lts/*
+  - '10'
+  - '8'
