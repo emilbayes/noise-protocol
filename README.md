@@ -54,11 +54,31 @@ console.log(clientSplit)
 - `noise.PKLEN` length of a public key in bytes
 - `noise.SKLEN` length of a secret key in bytes
 
+### Supported Patterns
+
+All one-way and fundamental handshake patterns are currently supported:
+
+- `N`
+- `K`
+- `X`
+- `NN`
+- `KN`
+- `NK`
+- `KK`
+- `NX`
+- `KX`
+- `XN`
+- `IN`
+- `XK`
+- `IK`
+- `XX`
+- `IX`
+
 ### `var handshakeState = noise.initialize(handshakePattern, initiator, prologue, [staticKeys], [ephemeralKeys], [remoteStaticKey], [remoteEphemeralKey])`
 
 Create a new Noise handshake instance with:
 
-* `handshakePattern` is one of `NN`, `KK`, `XX`
+* `handshakePattern` must be String and one of [supported patterns](#supported-patterns)
 * `initiator` must be Boolean
 * `prologue` must be Buffer. This can be an empty Buffer (`Buffer.alloc(0)`) if
   not used

@@ -7,7 +7,7 @@ var dh = require('./dh')
 var PKLEN = dh.PKLEN
 var SKLEN = dh.SKLEN
 
-module.exports = {
+module.exports = Object.freeze({
   initialize,
   writeMessage,
   readMessage,
@@ -15,7 +15,7 @@ module.exports = {
   keygen,
   SKLEN,
   PKLEN
-}
+})
 
 function HandshakeState () {
   this.symmetricState = sodium.sodium_malloc(symmetricState.STATELEN)
@@ -69,12 +69,22 @@ var PATTERNS = Object.freeze({
       [false, 'e', 'ee']
     ]
   },
-  XX: {
-    premessages: [],
+  KN: {
+    premessages: [
+      [true, 's']
+    ],
     messagePatterns: [
       [true, 'e'],
-      [false, 'e', 'ee', 's', 'es'],
-      [true, 's', 'se']
+      [false, 'e', 'ee', 'se']
+    ]
+  },
+  NK: {
+    premessages: [
+      [false, 's']
+    ],
+    messagePatterns: [
+      [true, 'e', 'es'],
+      [false, 'e', 'ee']
     ]
   },
   KK: {
@@ -85,6 +95,71 @@ var PATTERNS = Object.freeze({
     messagePatterns: [
       [true, 'e', 'es', 'ss'],
       [false, 'e', 'ee', 'se']
+    ]
+  },
+  NX: {
+    premessages: [],
+    messagePatterns: [
+      [true, 'e'],
+      [false, 'e', 'ee', 's', 'es']
+    ]
+  },
+  KX: {
+    premessages: [
+      [true, 's']
+    ],
+    messagePatterns: [
+      [true, 'e'],
+      [false, 'e', 'ee', 'se', 's', 'es']
+    ]
+  },
+  XN: {
+    premessages: [],
+    messagePatterns: [
+      [true, 'e'],
+      [false, 'e', 'ee'],
+      [true, 's', 'se']
+    ]
+  },
+  IN: {
+    premessages: [],
+    messagePatterns: [
+      [true, 'e', 's'],
+      [false, 'e', 'ee', 'se']
+    ]
+  },
+  XK: {
+    premessages: [
+      [false, 's']
+    ],
+    messagePatterns: [
+      [true, 'e', 'es'],
+      [false, 'e', 'ee'],
+      [true, 's', 'se']
+    ]
+  },
+  IK: {
+    premessages: [
+      [false, 's']
+    ],
+    messagePatterns: [
+      [true, 'e', 'es', 's', 'ss'],
+      [false, 'e', 'ee', 'se']
+    ]
+  },
+  XX: {
+    premessages: [],
+    messagePatterns: [
+      [true, 'e'],
+      [false, 'e', 'ee', 's', 'es'],
+      [true, 's', 'se']
+    ]
+  },
+  IX: {
+    premessages: [],
+    messagePatterns: [
+      [true, 'e', 's'],
+      [false, 'e', 'ee', 'se', 's', 'es']
     ]
   }
 })
