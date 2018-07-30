@@ -39,7 +39,7 @@ function initializeKey (state, key) {
 function hasKey (state) {
   assert(state.byteLength === STATELEN)
   var k = state.subarray(KEY_BEGIN, KEY_END)
-  return sodium.sodium_is_zero(k, k.byteLength)
+  return sodium.sodium_is_zero(k, k.byteLength) === false
 }
 
 function setNonce (state, nonce) {
