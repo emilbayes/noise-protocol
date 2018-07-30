@@ -40,6 +40,8 @@ function decrypt (out, k, n, ad, ciphertext) {
   ElongatedNonce.set(n, 16)
 
   decrypt.bytes = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(out, null, ciphertext, ad, ElongatedNonce, k)
+  decrypt.bytes += TAGLEN
+
   sodium.sodium_memzero(ElongatedNonce)
 }
 decrypt.bytes = 0
