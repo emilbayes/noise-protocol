@@ -249,7 +249,7 @@ function readMessage (state, message, payloadBuffer) {
         break
 
       case 's':
-        assert(state.rs.byteLength == null)
+        assert(state.rs == null)
         state.rs = sodium.sodium_malloc(dh.PKLEN)
 
         var bytes = 0
