@@ -36,6 +36,31 @@ function HandshakeState () {
 // initiator, ->, true
 // responder, <-, false
 var PATTERNS = Object.freeze({
+  N: {
+    premessages: [
+      [false, 's']
+    ],
+    messagePatterns: [
+      [true, 'e', 'es']
+    ]
+  },
+  K: {
+    premessages: [
+      [true, 's'],
+      [false, 's']
+    ],
+    messagePatterns: [
+      [true, 'e', 'es', 'ss']
+    ]
+  },
+  X: {
+    premessages: [
+      [false, 's']
+    ],
+    messagePatterns: [
+      [true, 'e', 'es', 's', 'ss']
+    ]
+  },
   NN: {
     premessages: [],
     messagePatterns: [
