@@ -253,7 +253,7 @@ function readMessage (state, message, payloadBuffer) {
         state.rs = sodium.sodium_malloc(dh.PKLEN)
 
         var bytes = 0
-        if (symmetricState.hasKey(state.symmetricState)) {
+        if (symmetricState._hasKey(state.symmetricState)) {
           bytes = dh.PKLEN + 16
         } else {
           bytes = dh.PKLEN

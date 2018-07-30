@@ -15,7 +15,8 @@ module.exports = {
   getHandshakeHash,
   encryptAndHash,
   decryptAndHash,
-  split
+  split,
+  _hasKey
 }
 
 var CHAINING_KEY_BEGIN = 0
@@ -143,4 +144,8 @@ function split (state, cipherstate1, cipherstate2) {
   cipherState.initializeKey(cipherstate2, TempKey2.subarray(0, 32))
   sodium.sodium_memzero(TempKey1)
   sodium.sodium_memzero(TempKey2)
+}
+
+function _hasKey (state) {
+  return cipherState.hasKey(state.subarray(CIPHER_BEGIN, CIPHER_END))
 }
