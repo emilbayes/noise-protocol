@@ -103,39 +103,39 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
   for (var initiatorToken of pat.premessages.initiator) {
     switch (initiatorToken) {
       case 'e':
-        assert(state.initator ? state.epk.byteLength != null : state.re.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initator ? state.epk : state.re)
+        assert(state.initiator ? state.epk.byteLength != null : state.re.byteLength != null)
+        symmetricState.mixHash(state.symmetricState, state.initiator ? state.epk : state.re)
         break
       case 's':
-        assert(state.initator ? state.spk.byteLength != null : state.rs.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initator ? state.spk : state.rs)
+        assert(state.initiator ? state.spk.byteLength != null : state.rs.byteLength != null)
+        symmetricState.mixHash(state.symmetricState, state.initiator ? state.spk : state.rs)
         break
       case 'e, s':
-        assert(state.initator ? state.epk.byteLength != null : state.re.byteLength != null)
-        assert(state.initator ? state.spk.byteLength != null : state.rs.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initator ? state.epk : state.re)
-        symmetricState.mixHash(state.symmetricState, state.initator ? state.spk : state.rs)
+        assert(state.initiator ? state.epk.byteLength != null : state.re.byteLength != null)
+        assert(state.initiator ? state.spk.byteLength != null : state.rs.byteLength != null)
+        symmetricState.mixHash(state.symmetricState, state.initiator ? state.epk : state.re)
+        symmetricState.mixHash(state.symmetricState, state.initiator ? state.spk : state.rs)
         break
       default:
-        throw new Error('Invalid premessage pattern for initator')
+        throw new Error('Invalid premessage pattern for initiator')
     }
   }
 
   for (var responderToken of pat.premessages.responder) {
     switch (responderToken) {
       case 'e':
-        assert(state.initator ? state.re.byteLength != null : state.epk.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initator ? state.re : state.epk)
+        assert(state.initiator ? state.re.byteLength != null : state.epk.byteLength != null)
+        symmetricState.mixHash(state.symmetricState, state.initiator ? state.re : state.epk)
         break
       case 's':
-        assert(state.initator ? state.rs.byteLength != null : state.spk.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initator ? state.rs : state.spk)
+        assert(state.initiator ? state.rs.byteLength != null : state.spk.byteLength != null)
+        symmetricState.mixHash(state.symmetricState, state.initiator ? state.rs : state.spk)
         break
       case 'e, s':
-        assert(state.initator ? state.re.byteLength != null : state.epk.byteLength != null)
-        assert(state.initator ? state.rs.byteLength != null : state.spk.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initator ? state.re : state.epk)
-        symmetricState.mixHash(state.symmetricState, state.initator ? state.rs : state.spk)
+        assert(state.initiator ? state.re.byteLength != null : state.epk.byteLength != null)
+        assert(state.initiator ? state.rs.byteLength != null : state.spk.byteLength != null)
+        symmetricState.mixHash(state.symmetricState, state.initiator ? state.re : state.epk)
+        symmetricState.mixHash(state.symmetricState, state.initiator ? state.rs : state.spk)
         break
       default:
         throw new Error('Invalid premessage pattern for responder')
@@ -185,26 +185,26 @@ function writeMessage (state, payload, messageBuffer) {
         break
 
       case 'ee':
-        dh[state.initator ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
+        dh[state.initiator ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case 'es':
-        if (state.initator) dh.initiator(DhResult, state.epk, state.esk, state.rs)
+        if (state.initiator) dh.initiator(DhResult, state.epk, state.esk, state.rs)
         else dh.responder(DhResult, state.spk, state.ssk, state.re)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case 'se':
-        if (state.initator) dh.initiator(DhResult, state.spk, state.ssk, state.re)
+        if (state.initiator) dh.initiator(DhResult, state.spk, state.ssk, state.re)
         else dh.responder(DhResult, state.epk, state.esk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case 'ss':
-        if (state.initator) dh.initiator(DhResult, state.spk, state.ssk, state.rs)
+        if (state.initiator) dh.initiator(DhResult, state.spk, state.ssk, state.rs)
         else dh.responder(DhResult, state.spk, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
@@ -279,26 +279,26 @@ function readMessage (state, message, payloadBuffer) {
 
         break
       case 'ee':
-        dh[state.initator ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
+        dh[state.initiator ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case 'es':
-        if (state.initator) dh.initiator(DhResult, state.epk, state.esk, state.rs)
+        if (state.initiator) dh.initiator(DhResult, state.epk, state.esk, state.rs)
         else dh.responder(DhResult, state.spk, state.ssk, state.re)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case 'se':
-        if (state.initator) dh.initiator(DhResult, state.spk, state.ssk, state.re)
+        if (state.initiator) dh.initiator(DhResult, state.spk, state.ssk, state.re)
         else dh.responder(DhResult, state.epk, state.esk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case 'ss':
-        if (state.initator) dh.initiator(DhResult, state.spk, state.ssk, state.rs)
+        if (state.initiator) dh.initiator(DhResult, state.spk, state.ssk, state.rs)
         else dh.responder(DhResult, state.spk, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
