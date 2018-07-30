@@ -4,7 +4,6 @@
   "description": "Naive implementation of the Noise Protocol Framework",
   "main": "index.js",
   "dependencies": {
-    "deep-freeze": "0.0.1",
     "hmac-blake2b": "^0.2.0",
     "nanoassert": "^1.1.0",
     "sodium-native": "^2.1.5"
