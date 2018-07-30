@@ -33,22 +33,18 @@ function HandshakeState () {
   this.messagePatterns = null
 }
 
+// initiator, ->, true
+// responder, <-, false
 var PATTERNS = Object.freeze({
   NN: {
-    premessages: {
-      initiator: [],
-      responder: []
-    },
+    premessages: [],
     messagePatterns: [
       [true, 'e'],
       [false, 'e', 'ee']
     ]
   },
   XX: {
-    premessages: {
-      initiator: [],
-      responder: []
-    },
+    premessages: [],
     messagePatterns: [
       [true, 'e'],
       [false, 'e', 'ee', 's', 'es'],
@@ -56,10 +52,10 @@ var PATTERNS = Object.freeze({
     ]
   },
   KK: {
-    premessages: {
-      initiator: ['s'],
-      responder: ['s']
-    },
+    premessages: [
+      [true, 's'],
+      [false, 's']
+    ],
     messagePatterns: [
       [true, 'e', 'es', 'ss'],
       [false, 'e', 'ee', 'se']
@@ -106,33 +102,22 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
   // hashing
   var pat = PATTERNS[handshakePattern]
 
-  for (var initiatorToken of pat.premessages.initiator) {
-    switch (initiatorToken) {
-      case 'e':
-        assert(state.initiator ? state.epk.byteLength != null : state.re.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initiator ? state.epk : state.re)
-        break
-      case 's':
-        assert(state.initiator ? state.spk.byteLength != null : state.rs.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initiator ? state.spk : state.rs)
-        break
-      default:
-        throw new Error('Invalid premessage pattern for initiator')
-    }
-  }
+  for (var pattern of clone(pat.premessages)) {
+    var initiatorPattern = pattern.shift()
 
-  for (var responderToken of pat.premessages.responder) {
-    switch (responderToken) {
-      case 'e':
-        assert(state.initiator ? state.re.byteLength != null : state.epk.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initiator ? state.re : state.epk)
-        break
-      case 's':
-        assert(state.initiator ? state.rs.byteLength != null : state.spk.byteLength != null)
-        symmetricState.mixHash(state.symmetricState, state.initiator ? state.rs : state.spk)
-        break
-      default:
-        throw new Error('Invalid premessage pattern for responder')
+    for (var token of pattern) {
+      switch (token) {
+        case 'e':
+          assert(state.initiator === initiatorPattern ? state.epk.byteLength != null : state.re.byteLength != null)
+          symmetricState.mixHash(state.symmetricState, state.initiator === initiatorPattern ? state.epk : state.re)
+          break
+        case 's':
+          assert(state.initiator === initiatorPattern ? state.spk.byteLength != null : state.rs.byteLength != null)
+          symmetricState.mixHash(state.symmetricState, state.initiator === initiatorPattern ? state.spk : state.rs)
+          break
+        default:
+          throw new Error('Invalid premessage pattern')
+      }
     }
   }
 
