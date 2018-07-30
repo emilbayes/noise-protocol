@@ -103,7 +103,7 @@ function encryptAndHash (state, ciphertext, plaintext) {
 
   cipherState.encryptWithAd(cstate, ciphertext, h, plaintext)
   encryptAndHash.bytes = cipherState.encryptWithAd.bytes
-  mixHash(state, ciphertext)
+  mixHash(state, ciphertext.subarray(0, encryptAndHash.bytes))
 }
 encryptAndHash.bytes = 0
 
@@ -118,7 +118,7 @@ function decryptAndHash (state, plaintext, ciphertext) {
 
   cipherState.decryptWithAd(cstate, plaintext, h, ciphertext)
   decryptAndHash.bytes = cipherState.decryptWithAd.bytes
-  mixHash(state, ciphertext)
+  mixHash(state, ciphertext.subarray(0, decryptAndHash.bytes))
 }
 decryptAndHash.bytes = 0
 
