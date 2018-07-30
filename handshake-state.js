@@ -160,6 +160,7 @@ function writeMessage (state, payload, messageBuffer) {
   var mpat = state.messagePatterns.shift()
   var moffset = 0
 
+  assert(mpat != null)
   assert(mpat.shift() === state.initiator)
 
   for (var token of mpat) {
@@ -242,6 +243,7 @@ function readMessage (state, message, payloadBuffer) {
   var mpat = state.messagePatterns.shift()
   var moffset = 0
 
+  assert(mpat != null)
   assert(mpat.shift() === !state.initiator)
 
   for (var token of mpat) {
