@@ -1,7 +1,7 @@
 var noise = require('../..')
 var test = require('tape')
 
-test('N pattern', function (assert) {
+test('NN pattern', function (assert) {
   var client = noise.initialize('NN', true, Buffer.alloc(0))
   var server = noise.initialize('NN', false, Buffer.alloc(0))
 
