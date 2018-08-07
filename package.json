@@ -1,5 +1,5 @@
 {
-  "name": "naive-noise",
+  "name": "noise-protocol",
   "version": "0.0.0",
   "description": "Naive implementation of the Noise Protocol Framework",
   "main": "index.js",
@@ -17,13 +17,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/emilbayes/naive-noise.git"
+    "url": "git+https://github.com/emilbayes/noise-protocol.git"
   },
   "keywords": [],
   "author": "Emil Bay <github@tixz.dk>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/emilbayes/naive-noise/issues"
+    "url": "https://github.com/emilbayes/noise-protocol/issues"
   },
-  "homepage": "https://github.com/emilbayes/naive-noise#readme"
+  "homepage": "https://github.com/emilbayes/noise-protocol#readme"
 }

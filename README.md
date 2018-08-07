@@ -1,6 +1,6 @@
-# `naive-noise`
+# `noise-protocol`
 
-[![Build Status](https://travis-ci.org/emilbayes/naive-noise.svg?branch=master)](https://travis-ci.org/emilbayes/naive-noise)
+[![Build Status](https://travis-ci.org/emilbayes/noise-protocol.svg?branch=master)](https://travis-ci.org/emilbayes/noise-protocol)
 
 > Naive implementation of the Noise Protocol Framework
 
@@ -17,7 +17,7 @@ application-specific handshakes securely.
 ## Usage
 
 ```js
-var noise = require('naive-noise')
+var noise = require('noise-protocol')
 
 var sClient = noise.keygen()
 var sServer = noise.keygen()
@@ -183,7 +183,7 @@ as you are aware of the security implication. For initiator and responder,
 ## Install
 
 ```sh
-npm install naive-noise
+npm install noise-protocol
 ```
 
 ## Deviations from the Noise specification
