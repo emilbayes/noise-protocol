@@ -39,7 +39,7 @@ function initializeKey (state, key) {
 function hasKey (state) {
   assert(state.byteLength === STATELEN)
   var k = state.subarray(KEY_BEGIN, KEY_END)
-  return sodium.sodium_is_zero(k, k.byteLength) === false
+  return sodium.sodium_is_zero(k) === false
 }
 
 function setNonce (state, nonce) {
@@ -56,7 +56,7 @@ function encryptWithAd (state, out, ad, plaintext) {
   assert(plaintext.byteLength != null)
 
   var n = state.subarray(NONCE_BEGIN, NONCE_END)
-  if (sodium.sodium_memcmp(n, maxnonce, n.byteLength)) throw new Error('Nonce overflow')
+  if (sodium.sodium_memcmp(n, maxnonce)) throw new Error('Nonce overflow')
 
   if (hasKey(state) === false) {
     out.set(plaintext)
@@ -88,7 +88,7 @@ function decryptWithAd (state, out, ad, ciphertext) {
   assert(ciphertext.byteLength != null)
 
   var n = state.subarray(NONCE_BEGIN, NONCE_END)
-  if (sodium.sodium_memcmp(n, maxnonce, n.byteLength)) throw new Error('Nonce overflow')
+  if (sodium.sodium_memcmp(n, maxnonce)) throw new Error('Nonce overflow')
 
   if (hasKey(state) === false) {
     out.set(ciphertext)

@@ -6,7 +6,7 @@
   "dependencies": {
     "hmac-blake2b": "^0.2.0",
     "nanoassert": "^1.1.0",
-    "sodium-native": "^2.1.5"
+    "sodium-native": "^2.2.1"
   },
   "devDependencies": {
     "standard": "^11.0.1",
