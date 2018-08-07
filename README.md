@@ -2,12 +2,9 @@
 
 [![Build Status](https://travis-ci.org/emilbayes/noise-protocol.svg?branch=master)](https://travis-ci.org/emilbayes/noise-protocol)
 
-> Naive implementation of the Noise Protocol Framework
+> Javascript implementation of the Noise Protocol Framework based on libsodium
 
-:rotating_light: :warning: :rotating_light:
-
-This implementation was made to get a feel for the different components in
-Noise and test out some ideas.
+:rotating_light: :warning: :rotating_light: BETA :rotating_light: :warning: :rotating_light:
 
 Note that this implementation is low level and requires knowledge of the
 [Noise Protocol Framework](http://noiseprotocol.org/noise.html), and is aimed to

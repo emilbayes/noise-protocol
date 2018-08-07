@@ -1,7 +1,7 @@
 {
   "name": "noise-protocol",
   "version": "0.1.0",
-  "description": "Naive implementation of the Noise Protocol Framework",
+  "description": "Javascript implementation of the Noise Protocol Framework based on libsodium",
   "main": "index.js",
   "dependencies": {
     "hmac-blake2b": "^0.2.0",
