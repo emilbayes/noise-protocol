@@ -1,6 +1,6 @@
 {
   "name": "noise-protocol",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Naive implementation of the Noise Protocol Framework",
   "main": "index.js",
   "dependencies": {
