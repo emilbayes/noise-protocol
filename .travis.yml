@@ -7,7 +7,7 @@ node_js:
 jobs:
   include:
   - stage: npm release
-    if: branch = "master" AND tag IS present
+    if: sender = "emilbayes" AND tag IS present
     node_js: node
     script: echo "Deploying to npm ..."
     deploy:
