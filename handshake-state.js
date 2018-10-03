@@ -253,6 +253,11 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
 
   state.messagePatterns = clone(pat.messagePatterns)
 
+  assert(state.messagePatterns.filter(p => p[0] === INITIATOR).some(p => p.includes(TOK_S))
+    ? (state.spk !== null && state.ssk !== null)
+    : true, // Default if none is found
+  'This handshake pattern requires a static keypair')
+
   return state
 }
 
