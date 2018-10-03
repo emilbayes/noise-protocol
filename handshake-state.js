@@ -1,5 +1,6 @@
 var sodium = require('sodium-native')
 var assert = require('nanoassert')
+var clone = require('clone')
 var symmetricState = require('./symmetric-state')
 var cipherState = require('./cipher-state')
 var dh = require('./dh')
@@ -458,8 +459,4 @@ function keygen (obj, sk) {
   }
 
   if (obj.byteLength != null) dh.generateKeypair(obj, sk)
-}
-
-function clone (o) { // Good enough for now
-  return JSON.parse(JSON.stringify(o))
 }

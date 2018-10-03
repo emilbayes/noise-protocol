@@ -4,6 +4,7 @@
   "description": "Javascript implementation of the Noise Protocol Framework based on libsodium",
   "main": "index.js",
   "dependencies": {
+    "clone": "^2.1.2",
     "hmac-blake2b": "^0.2.0",
     "nanoassert": "^1.1.0",
     "sodium-native": "^2.2.1"
