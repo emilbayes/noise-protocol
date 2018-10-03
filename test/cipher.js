@@ -37,10 +37,7 @@ test('identity', function (assert) {
 
   for (var i = 0; i < ciphertext.length; i++) {
     ciphertext[i] ^= i + 1
-    try {
-      cipher.decrypt(decrypted, key, nonce, null, ciphertext)
-      assert.fail()
-    } catch (_) {}
+    assert.throws(_ => cipher.decrypt(decrypted, key, nonce, null, ciphertext))
     ciphertext[i] ^= i + 1
   }
 
@@ -75,10 +72,7 @@ test('identity with ad', function (assert) {
 
   for (var i = 0; i < ciphertext.length; i++) {
     ciphertext[i] ^= 255
-    try {
-      cipher.decrypt(decrypted, key, nonce, ad, ciphertext)
-      assert.fail()
-    } catch (_) {}
+    assert.throws(_ => cipher.decrypt(decrypted, key, nonce, ad, ciphertext))
     ciphertext[i] ^= 255
   }
 
