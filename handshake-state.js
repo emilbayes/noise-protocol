@@ -35,132 +35,142 @@ function HandshakeState () {
   this.messagePatterns = null
 }
 
-// initiator, ->, true
-// responder, <-, false
+const INITIATOR = Symbol('INITIATOR')
+const RESPONDER = Symbol('INITIATOR')
+
+const TOK_S = Symbol('s')
+const TOK_E = Symbol('e')
+const TOK_ES = Symbol('es')
+const TOK_SE = Symbol('se')
+const TOK_EE = Symbol('ee')
+const TOK_SS = Symbol('es')
+
+// initiator, ->
+// responder, <-
 var PATTERNS = Object.freeze({
   N: {
     premessages: [
-      [false, 's']
+      [RESPONDER, TOK_S]
     ],
     messagePatterns: [
-      [true, 'e', 'es']
+      [INITIATOR, TOK_E, TOK_ES]
     ]
   },
   K: {
     premessages: [
-      [true, 's'],
-      [false, 's']
+      [INITIATOR, TOK_S],
+      [RESPONDER, TOK_S]
     ],
     messagePatterns: [
-      [true, 'e', 'es', 'ss']
+      [INITIATOR, TOK_E, TOK_ES, TOK_SS]
     ]
   },
   X: {
     premessages: [
-      [false, 's']
+      [RESPONDER, TOK_S]
     ],
     messagePatterns: [
-      [true, 'e', 'es', 's', 'ss']
+      [INITIATOR, TOK_E, TOK_ES, TOK_S, TOK_SS]
     ]
   },
   NN: {
     premessages: [],
     messagePatterns: [
-      [true, 'e'],
-      [false, 'e', 'ee']
+      [INITIATOR, TOK_E],
+      [RESPONDER, TOK_E, TOK_EE]
     ]
   },
   KN: {
     premessages: [
-      [true, 's']
+      [INITIATOR, TOK_S]
     ],
     messagePatterns: [
-      [true, 'e'],
-      [false, 'e', 'ee', 'se']
+      [INITIATOR, TOK_E],
+      [RESPONDER, TOK_E, TOK_EE, TOK_SE]
     ]
   },
   NK: {
     premessages: [
-      [false, 's']
+      [RESPONDER, TOK_S]
     ],
     messagePatterns: [
-      [true, 'e', 'es'],
-      [false, 'e', 'ee']
+      [INITIATOR, TOK_E, TOK_ES],
+      [RESPONDER, TOK_E, TOK_EE]
     ]
   },
   KK: {
     premessages: [
-      [true, 's'],
-      [false, 's']
+      [INITIATOR, TOK_S],
+      [RESPONDER, TOK_S]
     ],
     messagePatterns: [
-      [true, 'e', 'es', 'ss'],
-      [false, 'e', 'ee', 'se']
+      [INITIATOR, TOK_E, TOK_ES, TOK_SS],
+      [RESPONDER, TOK_E, TOK_EE, TOK_SE]
     ]
   },
   NX: {
     premessages: [],
     messagePatterns: [
-      [true, 'e'],
-      [false, 'e', 'ee', 's', 'es']
+      [INITIATOR, TOK_E],
+      [RESPONDER, TOK_E, TOK_EE, TOK_S, TOK_ES]
     ]
   },
   KX: {
     premessages: [
-      [true, 's']
+      [INITIATOR, TOK_S]
     ],
     messagePatterns: [
-      [true, 'e'],
-      [false, 'e', 'ee', 'se', 's', 'es']
+      [INITIATOR, TOK_E],
+      [RESPONDER, TOK_E, TOK_EE, TOK_SE, TOK_S, TOK_ES]
     ]
   },
   XN: {
     premessages: [],
     messagePatterns: [
-      [true, 'e'],
-      [false, 'e', 'ee'],
-      [true, 's', 'se']
+      [INITIATOR, TOK_E],
+      [RESPONDER, TOK_E, TOK_EE],
+      [INITIATOR, TOK_S, TOK_SE]
     ]
   },
   IN: {
     premessages: [],
     messagePatterns: [
-      [true, 'e', 's'],
-      [false, 'e', 'ee', 'se']
+      [INITIATOR, TOK_E, TOK_S],
+      [RESPONDER, TOK_E, TOK_EE, TOK_SE]
     ]
   },
   XK: {
     premessages: [
-      [false, 's']
+      [RESPONDER, TOK_S]
     ],
     messagePatterns: [
-      [true, 'e', 'es'],
-      [false, 'e', 'ee'],
-      [true, 's', 'se']
+      [INITIATOR, TOK_E, TOK_ES],
+      [RESPONDER, TOK_E, TOK_EE],
+      [INITIATOR, TOK_S, TOK_SE]
     ]
   },
   IK: {
     premessages: [
-      [false, 's']
+      [RESPONDER, TOK_S]
     ],
     messagePatterns: [
-      [true, 'e', 'es', 's', 'ss'],
-      [false, 'e', 'ee', 'se']
+      [INITIATOR, TOK_E, TOK_ES, TOK_S, TOK_SS],
+      [RESPONDER, TOK_E, TOK_EE, TOK_SE]
     ]
   },
   XX: {
     premessages: [],
     messagePatterns: [
-      [true, 'e'],
-      [false, 'e', 'ee', 's', 'es'],
-      [true, 's', 'se']
+      [INITIATOR, TOK_E],
+      [RESPONDER, TOK_E, TOK_EE, TOK_S, TOK_ES],
+      [INITIATOR, TOK_S, TOK_SE]
     ]
   },
   IX: {
     premessages: [],
     messagePatterns: [
-      [true, 'e', 's'],
-      [false, 'e', 'ee', 'se', 's', 'es']
+      [INITIATOR, TOK_E, TOK_S],
+      [RESPONDER, TOK_E, TOK_EE, TOK_SE, TOK_S, TOK_ES]
     ]
   }
 })
@@ -186,7 +196,7 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
   symmetricState.initializeSymmetric(state.symmetricState, protocolName)
   symmetricState.mixHash(state.symmetricState, prologue)
 
-  state.initiator = initiator
+  state.role = initiator === true ? INITIATOR : RESPONDER
 
   if (s != null) {
     state.spk = s.publicKey
@@ -205,17 +215,17 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
   var pat = PATTERNS[handshakePattern]
 
   for (var pattern of clone(pat.premessages)) {
-    var initiatorPattern = pattern.shift()
+    var patternRole = pattern.shift()
 
     for (var token of pattern) {
       switch (token) {
-        case 'e':
-          assert(state.initiator === initiatorPattern ? state.epk.byteLength != null : state.re.byteLength != null)
-          symmetricState.mixHash(state.symmetricState, state.initiator === initiatorPattern ? state.epk : state.re)
+        case TOK_E:
+          assert(state.role === patternRole ? state.epk.byteLength != null : state.re.byteLength != null)
+          symmetricState.mixHash(state.symmetricState, state.role === patternRole ? state.epk : state.re)
           break
-        case 's':
-          assert(state.initiator === initiatorPattern ? state.spk.byteLength != null : state.rs.byteLength != null)
-          symmetricState.mixHash(state.symmetricState, state.initiator === initiatorPattern ? state.spk : state.rs)
+        case TOK_S:
+          assert(state.role === patternRole ? state.spk.byteLength != null : state.rs.byteLength != null)
+          symmetricState.mixHash(state.symmetricState, state.role === patternRole ? state.spk : state.rs)
           break
         default:
           throw new Error('Invalid premessage pattern')
@@ -238,11 +248,12 @@ function writeMessage (state, payload, messageBuffer) {
   var moffset = 0
 
   assert(mpat != null)
-  assert(mpat.shift() === state.initiator)
+
+  assert(state.role === mpat.shift())
 
   for (var token of mpat) {
     switch (token) {
-      case 'e':
+      case TOK_E:
         assert(state.epk == null)
         assert(state.esk == null)
 
@@ -258,7 +269,7 @@ function writeMessage (state, payload, messageBuffer) {
 
         break
 
-      case 's':
+      case TOK_S:
         assert(state.spk.byteLength === dh.PKLEN)
 
         symmetricState.encryptAndHash(state.symmetricState, messageBuffer.subarray(moffset), state.spk)
@@ -266,27 +277,27 @@ function writeMessage (state, payload, messageBuffer) {
 
         break
 
-      case 'ee':
-        dh[state.initiator ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
+      case TOK_EE:
+        dh[state.role === INITIATOR ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
-      case 'es':
-        if (state.initiator) dh.initiator(DhResult, state.epk, state.esk, state.rs)
+      case TOK_ES:
+        if (state.role === INITIATOR) dh.initiator(DhResult, state.epk, state.esk, state.rs)
         else dh.responder(DhResult, state.spk, state.ssk, state.re)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
-      case 'se':
-        if (state.initiator) dh.initiator(DhResult, state.spk, state.ssk, state.re)
+      case TOK_SE:
+        if (state.role === INITIATOR) dh.initiator(DhResult, state.spk, state.ssk, state.re)
         else dh.responder(DhResult, state.epk, state.esk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
-      case 'ss':
-        dh[state.initiator ? 'initiator' : 'responder'](DhResult, state.spk, state.ssk, state.rs)
+      case TOK_SS:
+        dh[state.role === INITIATOR ? 'initiator' : 'responder'](DhResult, state.spk, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
@@ -321,11 +332,11 @@ function readMessage (state, message, payloadBuffer) {
   var moffset = 0
 
   assert(mpat != null)
-  assert(mpat.shift() === !state.initiator)
+  assert(mpat.shift() !== state.role)
 
   for (var token of mpat) {
     switch (token) {
-      case 'e':
+      case TOK_E:
         assert(state.re == null)
         assert(message.byteLength - moffset >= dh.PKLEN)
 
@@ -338,7 +349,7 @@ function readMessage (state, message, payloadBuffer) {
 
         break
 
-      case 's':
+      case TOK_S:
         assert(state.rs == null)
         state.rs = sodium.sodium_malloc(dh.PKLEN)
 
@@ -360,27 +371,27 @@ function readMessage (state, message, payloadBuffer) {
         moffset += symmetricState.decryptAndHash.bytesRead
 
         break
-      case 'ee':
-        dh[state.initiator ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
+      case TOK_EE:
+        dh[state.role === INITIATOR ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
-      case 'es':
-        if (state.initiator) dh.initiator(DhResult, state.epk, state.esk, state.rs)
+      case TOK_ES:
+        if (state.role === INITIATOR) dh.initiator(DhResult, state.epk, state.esk, state.rs)
         else dh.responder(DhResult, state.spk, state.ssk, state.re)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
-      case 'se':
-        if (state.initiator) dh.initiator(DhResult, state.spk, state.ssk, state.re)
+      case TOK_SE:
+        if (state.role === INITIATOR) dh.initiator(DhResult, state.spk, state.ssk, state.re)
         else dh.responder(DhResult, state.epk, state.esk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
-      case 'ss':
-        dh[state.initiator ? 'initiator' : 'responder'](DhResult, state.spk, state.ssk, state.rs)
+      case TOK_SS:
+        dh[state.role === INITIATOR ? 'initiator' : 'responder'](DhResult, state.spk, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
@@ -412,7 +423,7 @@ function destroy (state) {
     state.symmetricState = null
   }
 
-  state.initiator = null
+  state.role = null
 
   if (state.spk != null) {
     sodium.sodium_memzero(state.spk)
