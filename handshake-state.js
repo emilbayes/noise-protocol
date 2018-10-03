@@ -175,6 +175,12 @@ var PATTERNS = Object.freeze({
   }
 })
 
+function sodiumBufferCopy (src) {
+  var buf = sodium.sodium_malloc(src.byteLength)
+  buf.set(src)
+  return buf
+}
+
 function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
   assert(Object.keys(PATTERNS).includes(handshakePattern))
   assert(typeof initiator === 'boolean')
@@ -199,17 +205,29 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
   state.role = initiator === true ? INITIATOR : RESPONDER
 
   if (s != null) {
-    state.spk = s.publicKey
-    state.ssk = s.secretKey
+    assert(s.publicKey.byteLength === dh.PKLEN)
+    assert(s.secretKey.byteLength === dh.SKLEN)
+
+    state.spk = sodiumBufferCopy(s.publicKey)
+    state.ssk = sodiumBufferCopy(s.secretKey)
   }
 
   if (e != null) {
-    state.epk = e.publicKey
-    state.esk = e.secretKey
+    assert(e.publicKey.byteLength === dh.PKLEN)
+    assert(e.secretKey.byteLength === dh.SKLEN)
+
+    state.epk = sodiumBufferCopy(e.publicKey)
+    state.esk = sodiumBufferCopy(e.secretKey)
   }
 
-  if (rs != null) state.rs = rs
-  if (re != null) state.re = re
+  if (rs != null) {
+    assert(rs.byteLength === dh.PKLEN)
+    state.rs = sodiumBufferCopy(rs)
+  }
+  if (re != null) {
+    assert(re.byteLength === dh.PKLEN)
+    state.re = sodiumBufferCopy(re)
+  }
 
   // hashing
   var pat = PATTERNS[handshakePattern]

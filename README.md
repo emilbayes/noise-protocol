@@ -88,6 +88,10 @@ Create a new Noise handshake instance with:
 * `remoteStaticKey` is a Buffer of `PKLEN` bytes. This is most likely not required
 * `remoteEphemeralKey` is a Buffer of `PKLEN` bytes. This is most likely not required
 
+:alert: Key material passed in is copied into libsodium Secure Buffers, which
+can be cleared with `noise.destroy(state)`. Be aware that you manually have to
+destroy this state object, unless you want to rely on GC clearing it for you.
+
 Returns a `HandshakeState` object, which should be treated as an opaque object.
 This state is passed as the first argument to subsequent `noise` functions.
 
