@@ -35,8 +35,8 @@ function HandshakeState () {
   this.messagePatterns = null
 }
 
-const INITIATOR = Symbol('INITIATOR')
-const RESPONDER = Symbol('INITIATOR')
+const INITIATOR = Symbol('initiator')
+const RESPONDER = Symbol('responder')
 
 const TOK_S = Symbol('s')
 const TOK_E = Symbol('e')
