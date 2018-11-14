@@ -14,6 +14,7 @@ module.exports = Object.freeze({
   readMessage,
   destroy,
   keygen,
+  seedKeygen,
   SKLEN,
   PKLEN
 })
@@ -493,4 +494,9 @@ function keygen (obj, sk) {
   }
 
   if (obj.byteLength != null) dh.generateKeypair(obj, sk)
+
+function seedKeygen (seed) {
+  var obj = {publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN)}
+  dh.generateKeypair(obj.publicKey, obj.secretKey, seed)
+  return obj
 }
