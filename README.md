@@ -173,13 +173,13 @@ If no more message patterns are left to process, a **Split** will occur, as
 described in the Noise Specification. In this implementation an object with
 `{tx: Buffer, rx: Buffer}` will be returned, each being a
 [`sodium-native` Secure Buffer](https://github.com/sodium-friends/sodium-native#memory-protection)
-containing a symmetric state as a contiguous piece of memory. It is encoded as
-`64 byte ck | 64 byte h | 40 byte cipher state`, where cipher state is
+containing a cipher state as a contiguous piece of memory. It is encoded as
 `32 byte k | 8 byte n`, as describe in the Noise Specification. You can either
-choose to use these Buffers with the [`symmetricState`](symmetric-state.js)
+choose to use these Buffers with the [`cipherState`](cipher-state.js)
 functions or extract values and use with another transport encryption, as long
-as you are aware of the security implication. For initiator and responder,
-`tx` and `rx` are opposite so a responders `rx` is equal to an initiators `tx`.
+as you are aware of the security implication of either choise. For initiator and
+responder, `tx` and `rx` are opposite so a responders `rx` is equal to an
+initiators `tx`.
 
 ## Install
 
