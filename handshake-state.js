@@ -498,6 +498,6 @@ function keygen (obj, sk) {
 
 function seedKeygen (seed) {
   var obj = {publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN)}
-  dh.generateKeypair(obj.publicKey, obj.secretKey, seed)
+  dh.generateSeedKeypair(obj.publicKey, obj.secretKey, seed)
   return obj
 }
