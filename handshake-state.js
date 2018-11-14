@@ -493,7 +493,8 @@ function keygen (obj, sk) {
     return obj
   }
 
-  if (obj.byteLength != null) dh.generateKeypair(obj, sk)
+  if (obj.byteLength != null) dh.generateKeypair(null, obj)
+}
 
 function seedKeygen (seed) {
   var obj = {publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN)}
