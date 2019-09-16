@@ -183,7 +183,7 @@ function sodiumBufferCopy (src) {
 }
 
 function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
-  assert(Object.keys(PATTERNS).includes(handshakePattern))
+  assert(PATTERNS.hasOwnProperty(handshakePattern))
   assert(typeof initiator === 'boolean')
   assert(prologue.byteLength != null)
 
