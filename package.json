@@ -15,7 +15,7 @@
     "tape": "^4.9.0"
   },
   "scripts": {
-    "test": "tape test/**/*",
+    "test": "tape 'test/**/*.js'",
     "coverage": "c8 npm test"
   },
   "repository": {
