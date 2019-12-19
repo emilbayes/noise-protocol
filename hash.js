@@ -1,4 +1,4 @@
-var sodium = require('sodium-native')
+var sodium = require('sodium-universal')
 var assert = require('nanoassert')
 var hmacBlake2b = require('hmac-blake2b')
 var dh = require('./dh')

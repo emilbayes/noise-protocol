@@ -1,4 +1,4 @@
-var sodium = require('sodium-native')
+var sodium = require('sodium-universal')
 var assert = require('nanoassert')
 
 var DHLEN = 2 * sodium.crypto_kx_SESSIONKEYBYTES
