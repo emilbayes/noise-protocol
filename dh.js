@@ -26,7 +26,7 @@ function generateKeypair (pk, sk) {
 function generateSeedKeypair (pk, sk, seed) {
   assert(pk.byteLength === PKLEN)
   assert(sk.byteLength === SKLEN)
-  assert(seed.byteLength === SKLEN)
+  assert(seed.byteLength === SEEDLEN)
 
   sodium.crypto_kx_seed_keypair(pk, sk, seed)
 }
