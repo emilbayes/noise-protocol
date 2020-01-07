@@ -167,6 +167,14 @@ Takes a `HandshakeState` and destroys all internal data (eg. securely zeros out
 data contained in Buffer-like objects and resets state). Use this to dispose of
 state objects after a split has occurred or upon error
 
+### `{publicKey, secretKey} = noise.keygen([obj])`
+
+Generate a new keypair with a `secretKey` and `publicKey`.  You can optionally pass in your own `obj` that contains pre-allocated buffers on the `obj.publicKey` and `obj.publicKey` properties.  Otherwise they are created for you.
+
+### `{publicKey, secretKey} = noise.seedKeygen(seed)`
+
+Pass in a `seed` buffer of length `sodium.crypto_kx_SEEDBYTES` and get back an object with coresponding `publicKey` and `secretKey`.
+
 ### Split
 
 If no more message patterns are left to process, a **Split** will occur, as
