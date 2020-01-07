@@ -482,18 +482,14 @@ function destroy (state) {
   state.messagePatterns = null
 }
 
-function keygen (obj, sk) {
+function keygen (obj) {
   if (!obj) {
     obj = {publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN)}
     return keygen(obj)
   }
 
-  if (obj.publicKey) {
-    dh.generateKeypair(obj.publicKey, obj.secretKey)
-    return obj
-  }
-
-  if (obj.byteLength != null) dh.generateKeypair(null, obj)
+  dh.generateKeypair(obj.publicKey, obj.secretKey)
+  return obj
 }
 
 function seedKeygen (seed) {
