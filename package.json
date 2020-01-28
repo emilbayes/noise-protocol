@@ -6,7 +6,7 @@
   "dependencies": {
     "clone": "^2.1.2",
     "hmac-blake2b": "^0.2.0",
-    "nanoassert": "^1.1.0",
+    "nanoassert": "^2.0.0",
     "sodium-native": "^2.2.1"
   },
   "devDependencies": {

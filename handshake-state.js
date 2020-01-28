@@ -183,18 +183,15 @@ function sodiumBufferCopy (src) {
 }
 
 function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
-  assert(PATTERNS.hasOwnProperty(handshakePattern))
-  assert(typeof initiator === 'boolean')
-  assert(prologue.byteLength != null)
+  assert(Object.keys(PATTERNS).includes(handshakePattern), 'Unsupported handshake pattern')
+  assert(typeof initiator === 'boolean', 'Initiator must be a boolean')
+  assert(prologue.byteLength != null, 'prolouge must be a Buffer')
 
-  assert(s == null ? true : s.publicKey.byteLength === dh.PKLEN)
-  assert(s == null ? true : s.secretKey.byteLength === dh.SKLEN)
+  assert(e == null ? true : e.publicKey.byteLength === dh.PKLEN, `e.publicKey must be ${dh.PKLEN} bytes`)
+  assert(e == null ? true : e.secretKey.byteLength === dh.SKLEN, `e.secretKey must be ${dh.SKLEN} bytes`)
 
-  assert(e == null ? true : e.publicKey.byteLength === dh.PKLEN)
-  assert(e == null ? true : e.secretKey.byteLength === dh.SKLEN)
-
-  assert(rs == null ? true : rs.byteLength === dh.PKLEN)
-  assert(re == null ? true : re.byteLength === dh.PKLEN)
+  assert(rs == null ? true : rs.byteLength === dh.PKLEN, `rs must be ${dh.PKLEN} bytes`)
+  assert(re == null ? true : re.byteLength === dh.PKLEN, `re must be ${dh.PKLEN} bytes`)
 
   var state = new HandshakeState()
 
@@ -206,8 +203,8 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
   state.role = initiator === true ? INITIATOR : RESPONDER
 
   if (s != null) {
-    assert(s.publicKey.byteLength === dh.PKLEN)
-    assert(s.secretKey.byteLength === dh.SKLEN)
+    assert(s.publicKey.byteLength === dh.PKLEN, `s.publicKey must be ${dh.PKLEN} bytes`)
+    assert(s.secretKey.byteLength === dh.SKLEN, `s.secretKey must be ${dh.SKLEN} bytes`)
 
     state.spk = sodiumBufferCopy(s.publicKey)
     state.ssk = sodiumBufferCopy(s.secretKey)
@@ -302,26 +299,26 @@ function writeMessage (state, payload, messageBuffer) {
         break
 
       case TOK_EE:
-        dh[state.role === INITIATOR ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
+        dh.dh(DhResult, state.esk, state.re)
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case TOK_ES:
-        if (state.role === INITIATOR) dh.initiator(DhResult, state.epk, state.esk, state.rs)
-        else dh.responder(DhResult, state.spk, state.ssk, state.re)
+        if (state.role === INITIATOR) dh.dh(DhResult, state.esk, state.rs)
+        else dh.dh(DhResult, state.ssk, state.re)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case TOK_SE:
-        if (state.role === INITIATOR) dh.initiator(DhResult, state.spk, state.ssk, state.re)
-        else dh.responder(DhResult, state.epk, state.esk, state.rs)
+        if (state.role === INITIATOR) dh.dh(DhResult, state.ssk, state.re)
+        else dh.dh(DhResult, state.esk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case TOK_SS:
-        dh[state.role === INITIATOR ? 'initiator' : 'responder'](DhResult, state.spk, state.ssk, state.rs)
+        dh.dh(DhResult, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
@@ -396,26 +393,26 @@ function readMessage (state, message, payloadBuffer) {
 
         break
       case TOK_EE:
-        dh[state.role === INITIATOR ? 'initiator' : 'responder'](DhResult, state.epk, state.esk, state.re)
+        dh.dh(DhResult, state.esk, state.re)
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case TOK_ES:
-        if (state.role === INITIATOR) dh.initiator(DhResult, state.epk, state.esk, state.rs)
-        else dh.responder(DhResult, state.spk, state.ssk, state.re)
+        if (state.role === INITIATOR) dh.dh(DhResult, state.esk, state.rs)
+        else dh.dh(DhResult, state.ssk, state.re)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case TOK_SE:
-        if (state.role === INITIATOR) dh.initiator(DhResult, state.spk, state.ssk, state.re)
-        else dh.responder(DhResult, state.epk, state.esk, state.rs)
+        if (state.role === INITIATOR) dh.dh(DhResult, state.ssk, state.re)
+        else dh.dh(DhResult, state.esk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)
         break
       case TOK_SS:
-        dh[state.role === INITIATOR ? 'initiator' : 'responder'](DhResult, state.spk, state.ssk, state.rs)
+        dh.dh(DhResult, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
         sodium.sodium_memzero(DhResult)

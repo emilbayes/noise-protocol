@@ -1,4 +1,4 @@
-var noise = require('../')
+var noise = require('..')
 var test = require('tape')
 
 test('Static key pattern without static keypair', function (assert) {
