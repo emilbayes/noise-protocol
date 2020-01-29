@@ -34,6 +34,8 @@ function HandshakeState () {
   this.re = null
 
   this.messagePatterns = null
+  // Only ever use in testing.
+  this.fixedE = null
 }
 
 const INITIATOR = Symbol('initiator')
@@ -278,10 +280,16 @@ function writeMessage (state, payload, messageBuffer) {
         assert(state.epk == null)
         assert(state.esk == null)
 
-        state.epk = sodium.sodium_malloc(dh.PKLEN)
-        state.esk = sodium.sodium_malloc(dh.SKLEN)
-
-        dh.generateKeypair(state.epk, state.esk)
+        if (state.fixedE !== null) {
+          assert(state.fixedE.publicKey.byteLength === dh.PKLEN, `fixedE.publicKey must be ${dh.PKLEN} bytes`)
+          assert(state.fixedE.secretKey.byteLength === dh.SKLEN, `fixedE.secretKey must be ${dh.SKLEN} bytes`)
+          state.epk = sodiumBufferCopy(state.fixedE.publicKey)
+          state.esk = sodiumBufferCopy(state.fixedE.secretKey)
+        } else {
+          state.epk = sodium.sodium_malloc(dh.PKLEN)
+          state.esk = sodium.sodium_malloc(dh.SKLEN)
+          dh.generateKeypair(state.epk, state.esk)
+        }
 
         messageBuffer.set(state.epk, moffset)
         moffset += state.epk.byteLength
