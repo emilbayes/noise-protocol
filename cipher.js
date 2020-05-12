@@ -29,7 +29,7 @@ function encrypt (out, k, n, ad, plaintext) {
 
   ElongatedNonce.set(n, 4)
 
-  encrypt.bytesWritten = sodium.crypto_aead_chacha20poly1305_ietf_encrypt(out, plaintext, ad, null, ElongatedNonce, k)
+  encrypt.bytesWritten = sodium.crypto_aead_chacha20poly1305_ietf_encrypt(out.subarray(0, plaintext.byteLength + MACLEN), plaintext, ad, null, ElongatedNonce, k)
   encrypt.bytesRead = encrypt.bytesWritten - MACLEN
 
   sodium.sodium_memzero(ElongatedNonce)
@@ -46,7 +46,7 @@ function decrypt (out, k, n, ad, ciphertext) {
 
   ElongatedNonce.set(n, 4)
 
-  decrypt.bytesWritten = sodium.crypto_aead_chacha20poly1305_ietf_decrypt(out, null, ciphertext, ad, ElongatedNonce, k)
+  decrypt.bytesWritten = sodium.crypto_aead_chacha20poly1305_ietf_decrypt(out.subarray(0, ciphertext.byteLength - MACLEN), null, ciphertext, ad, ElongatedNonce, k)
   decrypt.bytesRead = decrypt.bytesWritten + MACLEN
 
   sodium.sodium_memzero(ElongatedNonce)
