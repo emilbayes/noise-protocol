@@ -7,7 +7,7 @@
     "clone": "^2.1.2",
     "hmac-blake2b": "^0.2.0",
     "nanoassert": "^2.0.0",
-    "sodium-native": "^2.2.1"
+    "sodium-native": "^3.1.1"
   },
   "devDependencies": {
     "c8": "^3.2.0",
