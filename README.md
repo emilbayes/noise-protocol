@@ -11,6 +11,10 @@ Note that this implementation is low level and requires knowledge of the
 be a building block for higher-level modules wishing to implement
 application-specific handshakes securely.
 
+This module only implements the `Noise_*_25519_ChaChaPoly_BLAKE2b` handshake,
+meaning `Curve25519` for DH, `ChaCha20Poly1305` for AEAD and `BLAKE2b` for
+hashing.
+
 ## Usage
 
 ```js
@@ -19,7 +23,7 @@ var noise = require('noise-protocol')
 var sClient = noise.keygen()
 var sServer = noise.keygen()
 
-// Initialize a Noise_KK_25519_XChaChaPoly_BLAKE2b handshake
+// Initialize a Noise_KK_25519_ChaChaPoly_BLAKE2b handshake
 var client = noise.initialize('KK', true, Buffer.alloc(0), sClient, null, sServer.publicKey)
 var server = noise.initialize('KK', false, Buffer.alloc(0), sServer, null, sClient.publicKey)
 
@@ -177,7 +181,7 @@ containing a cipher state as a contiguous piece of memory. It is encoded as
 `32 byte k | 8 byte n`, as describe in the Noise Specification. You can either
 choose to use these Buffers with the [`cipherState`](cipher-state.js)
 functions or extract values and use with another transport encryption, as long
-as you are aware of the security implication of either choise. For initiator and
+as you are aware of the security implication of either choice. For initiator and
 responder, `tx` and `rx` are opposite so a responders `rx` is equal to an
 initiators `tx`.
 
@@ -189,10 +193,6 @@ npm install noise-protocol
 
 ## Deviations from the Noise specification
 
-* Uses `libsodium`s `crypto_kx_*` API which hashes the shared secret with the
-  client and server public key; `BLAKE2b-512(shared || client_pk || server_pk)`
-* Uses `crypto_aead_xchacha20poly1305_ietf_*` for symmetric cryptography with
-  nonces `128-bit zero || 64-bit counter`, meaning the protocol name is `Noise_*_25519_XChaChaPoly_BLAKE2b`, with `*` being the handshake pattern
 * Functions follow the `fn(state, output, args...)` convention
 * Names the 16 bytes for an authentication tag as `MACLEN`
 
