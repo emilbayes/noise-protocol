@@ -440,39 +440,39 @@ readMessage.bytes = 0
 
 function destroy (state) {
   if (state.symmetricState != null) {
-    sodium.sodium_memzero(state.symmetricState)
+    sodium.sodium_free(state.symmetricState)
     state.symmetricState = null
   }
 
   state.role = null
 
   if (state.spk != null) {
-    sodium.sodium_memzero(state.spk)
+    sodium.sodium_free(state.spk)
     state.spk = null
   }
 
   if (state.ssk != null) {
-    sodium.sodium_memzero(state.ssk)
+    sodium.sodium_free(state.ssk)
     state.ssk = null
   }
 
   if (state.epk != null) {
-    sodium.sodium_memzero(state.epk)
+    sodium.sodium_free(state.epk)
     state.epk = null
   }
 
   if (state.esk != null) {
-    sodium.sodium_memzero(state.esk)
+    sodium.sodium_free(state.esk)
     state.esk = null
   }
 
   if (state.rs != null) {
-    sodium.sodium_memzero(state.rs)
+    sodium.sodium_free(state.rs)
     state.rs = null
   }
 
   if (state.re != null) {
-    sodium.sodium_memzero(state.re)
+    sodium.sodium_free(state.re)
     state.re = null
   }
 
