@@ -7,5 +7,5 @@ test('constants', function (assert) {
   assert.end()
 })
 
-test('hash')
-test('hkdf')
+test.skip('hash')
+test.skip('hkdf')

@@ -339,7 +339,7 @@ function writeMessage (state, payload, messageBuffer) {
     var rx = sodium.sodium_malloc(cipherState.STATELEN)
     symmetricState.split(state.symmetricState, tx, rx)
 
-    return {tx, rx}
+    return { tx, rx }
   }
 }
 writeMessage.bytes = 0
@@ -433,7 +433,7 @@ function readMessage (state, message, payloadBuffer) {
     var rx = sodium.sodium_malloc(cipherState.STATELEN)
     symmetricState.split(state.symmetricState, rx, tx)
 
-    return {tx, rx}
+    return { tx, rx }
   }
 }
 readMessage.bytes = 0
@@ -481,7 +481,7 @@ function destroy (state) {
 
 function keygen (obj, sk) {
   if (!obj) {
-    obj = {publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN)}
+    obj = { publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN) }
     return keygen(obj)
   }
 
@@ -494,7 +494,7 @@ function keygen (obj, sk) {
 }
 
 function seedKeygen (seed) {
-  var obj = {publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN)}
+  var obj = { publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN) }
   dh.generateSeedKeypair(obj.publicKey, obj.secretKey, seed)
   return obj
 }

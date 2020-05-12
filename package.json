@@ -10,11 +10,12 @@
     "sodium-native": "^3.1.1"
   },
   "devDependencies": {
-    "c8": "^3.2.0",
-    "standard": "^11.0.1",
-    "tape": "^4.9.0"
+    "c8": "^7.1.2",
+    "standard": "^14.3.4",
+    "tape": "^5.0.0"
   },
   "scripts": {
+    "pretest": "standard",
     "test": "tape 'test/**/*.js'",
     "coverage": "c8 npm test"
   },

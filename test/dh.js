@@ -7,9 +7,9 @@ test('constants', function (assert) {
 })
 
 test('generateKeypair', function (assert) {
-  var kp1 = {sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN)}
-  var kp2 = {sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN)}
-  var kp3 = {sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN)}
+  var kp1 = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
+  var kp2 = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
+  var kp3 = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
 
   dh.generateKeypair(kp2.pk, kp2.sk)
   dh.generateKeypair(kp3.pk, kp3.sk)
@@ -29,8 +29,8 @@ test('generateKeypair', function (assert) {
 })
 
 test('initiator / responder', function (assert) {
-  var server = {sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN)}
-  var client = {sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN)}
+  var server = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
+  var client = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
 
   dh.generateKeypair(server.pk, server.sk)
   dh.generateKeypair(client.pk, client.sk)
@@ -70,7 +70,7 @@ const badKeys = [
 ]
 
 test('bad keys', function (assert) {
-  var keypair = {sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN)}
+  var keypair = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
   dh.generateKeypair(keypair.pk, keypair.sk)
 
   var dho = Buffer.alloc(dh.DHLEN)
