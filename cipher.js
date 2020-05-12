@@ -5,10 +5,10 @@ var KEYLEN = 32
 var NONCELEN = 8
 var MACLEN = 16
 
-assert(sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES === KEYLEN)
+assert(sodium.crypto_aead_chacha20poly1305_ietf_KEYBYTES === KEYLEN)
 // 16 bytes are cut off in the following functions
-assert(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES === 16 + NONCELEN)
-assert(sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES === MACLEN)
+assert(sodium.crypto_aead_chacha20poly1305_ietf_NPUBBYTES === 4 + NONCELEN)
+assert(sodium.crypto_aead_chacha20poly1305_ietf_ABYTES === MACLEN)
 
 module.exports = {
   KEYLEN,
@@ -19,8 +19,7 @@ module.exports = {
   rekey
 }
 
-var ElongatedNonce = sodium.sodium_malloc(sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES)
-sodium.sodium_memzero(ElongatedNonce)
+var ElongatedNonce = sodium.sodium_malloc(sodium.crypto_aead_chacha20poly1305_ietf_NPUBBYTES)
 function encrypt (out, k, n, ad, plaintext) {
   assert(out.byteLength >= plaintext.byteLength + MACLEN, 'output buffer must be at least plaintext plus MACLEN bytes long')
   assert(k.byteLength === KEYLEN)
@@ -28,9 +27,9 @@ function encrypt (out, k, n, ad, plaintext) {
   assert(ad == null ? true : ad.byteLength != null)
   sodium.sodium_memzero(ElongatedNonce)
 
-  ElongatedNonce.set(n, 16)
+  ElongatedNonce.set(n, 4)
 
-  encrypt.bytesWritten = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(out, plaintext, ad, null, ElongatedNonce, k)
+  encrypt.bytesWritten = sodium.crypto_aead_chacha20poly1305_ietf_encrypt(out, plaintext, ad, null, ElongatedNonce, k)
   encrypt.bytesRead = encrypt.bytesWritten - MACLEN
 
   sodium.sodium_memzero(ElongatedNonce)
@@ -45,9 +44,9 @@ function decrypt (out, k, n, ad, ciphertext) {
   assert(ad == null ? true : ad.byteLength != null)
   sodium.sodium_memzero(ElongatedNonce)
 
-  ElongatedNonce.set(n, 16)
+  ElongatedNonce.set(n, 4)
 
-  decrypt.bytesWritten = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(out, null, ciphertext, ad, ElongatedNonce, k)
+  decrypt.bytesWritten = sodium.crypto_aead_chacha20poly1305_ietf_decrypt(out, null, ciphertext, ad, ElongatedNonce, k)
   decrypt.bytesRead = decrypt.bytesWritten + MACLEN
 
   sodium.sodium_memzero(ElongatedNonce)
