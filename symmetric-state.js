@@ -129,7 +129,7 @@ decryptAndHash.bytesWritten = 0
 
 var TempKey1 = sodium.sodium_malloc(HASHLEN)
 var TempKey2 = sodium.sodium_malloc(HASHLEN)
-var zerolen = Buffer.alloc(0)
+var zerolen = new Uint8Array(0)
 function split (state, cipherstate1, cipherstate2) {
   assert(state.byteLength === STATELEN)
   assert(cipherstate1.byteLength === cipherState.STATELEN)

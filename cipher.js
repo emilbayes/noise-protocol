@@ -54,9 +54,9 @@ function decrypt (out, k, n, ad, ciphertext) {
 decrypt.bytesWritten = 0
 decrypt.bytesRead = 0
 
-var maxnonce = Buffer.alloc(8, 0xff)
-var zerolen = Buffer.alloc(0)
-var zeros = Buffer.alloc(32, 0)
+var maxnonce = new Uint8Array(8).fill(0xff)
+var zerolen = new Uint8Array(0)
+var zeros = new Uint8Array(32)
 
 var IntermediateKey = sodium.sodium_malloc(KEYLEN + MACLEN)
 sodium.sodium_memzero(IntermediateKey)

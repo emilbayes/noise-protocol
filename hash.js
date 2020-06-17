@@ -28,9 +28,9 @@ function hmac (out, key, data) {
 }
 
 var TempKey = sodium.sodium_malloc(HASHLEN)
-var Byte0x01 = Buffer.from([0x01])
-var Byte0x02 = Buffer.from([0x02])
-var Byte0x03 = Buffer.from([0x03])
+var Byte0x01 = new Uint8Array([0x01])
+var Byte0x02 = new Uint8Array([0x02])
+var Byte0x03 = new Uint8Array([0x03])
 
 function hkdf (out1, out2, out3, chainingKey, inputKeyMaterial) {
   assert(out1.byteLength === HASHLEN)

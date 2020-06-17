@@ -49,7 +49,7 @@ function setNonce (state, nonce) {
   state.set(nonce, NONCE_BEGIN)
 }
 
-var maxnonce = Buffer.alloc(8, 0xff)
+var maxnonce = new Uint8Array(8).fill(0xff)
 function encryptWithAd (state, out, ad, plaintext) {
   assert(state.byteLength === STATELEN)
   assert(out.byteLength != null)
