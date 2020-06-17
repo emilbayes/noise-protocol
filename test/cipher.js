@@ -7,9 +7,9 @@ test('constants', function (assert) {
   assert.ok(cipher.NONCELEN === 8, 'NONCELEN conforms to Noise Protocol')
   assert.ok(cipher.MACLEN === 16, 'MACLEN conforms to Noise Protocol')
 
-  assert.ok(cipher.KEYLEN === sodium.crypto_aead_xchacha20poly1305_ietf_KEYBYTES, 'KEYLEN')
-  assert.ok(cipher.NONCELEN + 16 === sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES, 'NONCELEN')
-  assert.ok(cipher.MACLEN === sodium.crypto_aead_xchacha20poly1305_ietf_ABYTES, 'MACLEN')
+  assert.ok(cipher.KEYLEN === sodium.crypto_aead_chacha20poly1305_ietf_KEYBYTES, 'KEYLEN')
+  assert.ok(cipher.NONCELEN + 4 === sodium.crypto_aead_chacha20poly1305_ietf_NPUBBYTES, 'NONCELEN')
+  assert.ok(cipher.MACLEN === sodium.crypto_aead_chacha20poly1305_ietf_ABYTES, 'MACLEN')
 
   assert.end()
 })
