@@ -1,4 +1,5 @@
-var sodium = require('sodium-native')
+/* eslint-disable camelcase */
+const { sodium_malloc, sodium_memzero } = require('sodium-universal/memory')
 var assert = require('nanoassert')
 var cipherState = require('./cipher-state')
 var hash = require('./hash')
@@ -30,7 +31,7 @@ function initializeSymmetric (state, protocolName) {
   assert(state.byteLength === STATELEN)
   assert(protocolName.byteLength != null)
 
-  sodium.sodium_memzero(state)
+  sodium_memzero(state)
   if (protocolName.byteLength <= HASHLEN) state.set(protocolName, HASH_BEGIN)
   else hash.hash(state.subarray(HASH_BEGIN, HASH_END), [protocolName])
 
@@ -39,7 +40,7 @@ function initializeSymmetric (state, protocolName) {
   cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), null)
 }
 
-var TempKey = sodium.sodium_malloc(HASHLEN)
+var TempKey = sodium_malloc(HASHLEN)
 function mixKey (state, inputKeyMaterial) {
   assert(state.byteLength === STATELEN)
   assert(inputKeyMaterial.byteLength != null)
@@ -54,7 +55,7 @@ function mixKey (state, inputKeyMaterial) {
 
   // HASHLEN is always 64 here, so we truncate to 32 bytes per the spec
   cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), TempKey.subarray(0, 32))
-  sodium.sodium_memzero(TempKey)
+  sodium_memzero(TempKey)
 }
 
 function mixHash (state, data) {
@@ -65,7 +66,7 @@ function mixHash (state, data) {
   hash.hash(h, [h, data])
 }
 
-var TempHash = sodium.sodium_malloc(HASHLEN)
+var TempHash = sodium_malloc(HASHLEN)
 function mixKeyAndHash (state, inputKeyMaterial) {
   assert(state.byteLength === STATELEN)
   assert(inputKeyMaterial.byteLength != null)
@@ -79,11 +80,11 @@ function mixKeyAndHash (state, inputKeyMaterial) {
   )
 
   mixHash(state, TempHash)
-  sodium.sodium_memzero(TempHash)
+  sodium_memzero(TempHash)
 
   // HASHLEN is always 64 here, so we truncate to 32 bytes per the spec
   cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), TempKey.subarray(0, 32))
-  sodium.sodium_memzero(TempKey)
+  sodium_memzero(TempKey)
 }
 
 function getHandshakeHash (state, out) {
@@ -127,8 +128,8 @@ function decryptAndHash (state, plaintext, ciphertext) {
 decryptAndHash.bytesRead = 0
 decryptAndHash.bytesWritten = 0
 
-var TempKey1 = sodium.sodium_malloc(HASHLEN)
-var TempKey2 = sodium.sodium_malloc(HASHLEN)
+var TempKey1 = sodium_malloc(HASHLEN)
+var TempKey2 = sodium_malloc(HASHLEN)
 var zerolen = new Uint8Array(0)
 function split (state, cipherstate1, cipherstate2) {
   assert(state.byteLength === STATELEN)
@@ -146,8 +147,8 @@ function split (state, cipherstate1, cipherstate2) {
   // HASHLEN is always 64 here, so we truncate to 32 bytes per the spec
   cipherState.initializeKey(cipherstate1, TempKey1.subarray(0, 32))
   cipherState.initializeKey(cipherstate2, TempKey2.subarray(0, 32))
-  sodium.sodium_memzero(TempKey1)
-  sodium.sodium_memzero(TempKey2)
+  sodium_memzero(TempKey1)
+  sodium_memzero(TempKey2)
 }
 
 function _hasKey (state) {

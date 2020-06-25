@@ -1,10 +1,13 @@
-var sodium = require('sodium-native')
+/* eslint-disable camelcase */
+const { crypto_kx_SEEDBYTES, crypto_kx_keypair, crypto_kx_seed_keypair } = require('sodium-universal/crypto_kx')
+const { crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES, crypto_scalarmult } = require('sodium-universal/crypto_scalarmult')
+
 var assert = require('nanoassert')
 
-var DHLEN = sodium.crypto_scalarmult_BYTES
-var PKLEN = sodium.crypto_scalarmult_BYTES
-var SKLEN = sodium.crypto_scalarmult_SCALARBYTES
-var SEEDLEN = sodium.crypto_kx_SEEDBYTES
+var DHLEN = crypto_scalarmult_BYTES
+var PKLEN = crypto_scalarmult_BYTES
+var SKLEN = crypto_scalarmult_SCALARBYTES
+var SEEDLEN = crypto_kx_SEEDBYTES
 
 module.exports = {
   DHLEN,
@@ -19,7 +22,7 @@ module.exports = {
 function generateKeypair (pk, sk) {
   assert(pk.byteLength === PKLEN)
   assert(sk.byteLength === SKLEN)
-  sodium.crypto_kx_keypair(pk, sk)
+  crypto_kx_keypair(pk, sk)
 }
 
 function generateSeedKeypair (pk, sk, seed) {
@@ -27,7 +30,7 @@ function generateSeedKeypair (pk, sk, seed) {
   assert(sk.byteLength === SKLEN)
   assert(seed.byteLength === SKLEN)
 
-  sodium.crypto_kx_seed_keypair(pk, sk, seed)
+  crypto_kx_seed_keypair(pk, sk, seed)
 }
 
 function dh (output, lsk, pk) {
@@ -35,7 +38,7 @@ function dh (output, lsk, pk) {
   assert(lsk.byteLength === SKLEN)
   assert(pk.byteLength === PKLEN)
 
-  sodium.crypto_scalarmult(
+  crypto_scalarmult(
     output,
     lsk,
     pk

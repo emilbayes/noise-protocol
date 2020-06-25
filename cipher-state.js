@@ -1,4 +1,8 @@
-var sodium = require('sodium-native')
+/* eslint-disable camelcase */
+const { sodium_memzero } = require('sodium-universal/memory')
+const { sodium_memcmp, sodium_is_zero } = require('sodium-universal/crypto_verify')
+const { sodium_increment } = require('sodium-universal/utils')
+
 var assert = require('nanoassert')
 var cipher = require('./cipher')
 
@@ -28,18 +32,18 @@ function initializeKey (state, key) {
   assert(key == null ? true : key.byteLength === cipher.KEYLEN)
 
   if (key == null) {
-    sodium.sodium_memzero(state.subarray(KEY_BEGIN, KEY_END))
+    sodium_memzero(state.subarray(KEY_BEGIN, KEY_END))
     return
   }
 
   state.set(key)
-  sodium.sodium_memzero(state.subarray(NONCE_BEGIN, NONCE_END))
+  sodium_memzero(state.subarray(NONCE_BEGIN, NONCE_END))
 }
 
 function hasKey (state) {
   assert(state.byteLength === STATELEN)
   var k = state.subarray(KEY_BEGIN, KEY_END)
-  return sodium.sodium_is_zero(k) === false
+  return sodium_is_zero(k) === false
 }
 
 function setNonce (state, nonce) {
@@ -56,7 +60,7 @@ function encryptWithAd (state, out, ad, plaintext) {
   assert(plaintext.byteLength != null)
 
   var n = state.subarray(NONCE_BEGIN, NONCE_END)
-  if (sodium.sodium_memcmp(n, maxnonce)) throw new Error('Nonce overflow')
+  if (sodium_memcmp(n, maxnonce)) throw new Error('Nonce overflow')
 
   if (hasKey(state) === false) {
     out.set(plaintext)
@@ -77,7 +81,7 @@ function encryptWithAd (state, out, ad, plaintext) {
   encryptWithAd.bytesRead = cipher.encrypt.bytesRead
   encryptWithAd.bytesWritten = cipher.encrypt.bytesWritten
 
-  sodium.sodium_increment(n)
+  sodium_increment(n)
 }
 encryptWithAd.bytesRead = 0
 encryptWithAd.bytesWritten = 0
@@ -88,7 +92,7 @@ function decryptWithAd (state, out, ad, ciphertext) {
   assert(ciphertext.byteLength != null)
 
   var n = state.subarray(NONCE_BEGIN, NONCE_END)
-  if (sodium.sodium_memcmp(n, maxnonce)) throw new Error('Nonce overflow')
+  if (sodium_memcmp(n, maxnonce)) throw new Error('Nonce overflow')
 
   if (hasKey(state) === false) {
     out.set(ciphertext)
@@ -109,7 +113,7 @@ function decryptWithAd (state, out, ad, ciphertext) {
   decryptWithAd.bytesRead = cipher.decrypt.bytesRead
   decryptWithAd.bytesWritten = cipher.decrypt.bytesWritten
 
-  sodium.sodium_increment(n)
+  sodium_increment(n)
 }
 decryptWithAd.bytesRead = 0
 decryptWithAd.bytesWritten = 0

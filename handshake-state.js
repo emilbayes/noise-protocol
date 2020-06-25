@@ -1,12 +1,15 @@
-var sodium = require('sodium-native')
-var assert = require('nanoassert')
-var clone = require('clone')
-var symmetricState = require('./symmetric-state')
-var cipherState = require('./cipher-state')
-var dh = require('./dh')
+/* eslint-disable camelcase */
+const { sodium_malloc, sodium_memzero } = require('sodium-universal/memory')
+const assert = require('nanoassert')
+const clone = require('clone')
+const symmetricState = require('./symmetric-state')
+const cipherState = require('./cipher-state')
+const dh = require('./dh')
 
-var PKLEN = dh.PKLEN
-var SKLEN = dh.SKLEN
+function sodium_free () {}
+
+const PKLEN = dh.PKLEN
+const SKLEN = dh.SKLEN
 
 module.exports = Object.freeze({
   initialize,
@@ -20,7 +23,7 @@ module.exports = Object.freeze({
 })
 
 function HandshakeState () {
-  this.symmetricState = sodium.sodium_malloc(symmetricState.STATELEN)
+  this.symmetricState = sodium_malloc(symmetricState.STATELEN)
 
   this.initiator = null
 
@@ -177,7 +180,7 @@ var PATTERNS = Object.freeze({
 })
 
 function sodiumBufferCopy (src) {
-  var buf = sodium.sodium_malloc(src.byteLength)
+  var buf = sodium_malloc(src.byteLength)
   buf.set(src)
   return buf
 }
@@ -259,7 +262,7 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
   return state
 }
 
-var DhResult = sodium.sodium_malloc(dh.DHLEN)
+var DhResult = sodium_malloc(dh.DHLEN)
 function writeMessage (state, payload, messageBuffer) {
   assert(state instanceof HandshakeState)
   assert(payload.byteLength != null)
@@ -278,8 +281,8 @@ function writeMessage (state, payload, messageBuffer) {
         assert(state.epk == null)
         assert(state.esk == null)
 
-        state.epk = sodium.sodium_malloc(dh.PKLEN)
-        state.esk = sodium.sodium_malloc(dh.SKLEN)
+        state.epk = sodium_malloc(dh.PKLEN)
+        state.esk = sodium_malloc(dh.SKLEN)
 
         dh.generateKeypair(state.epk, state.esk)
 
@@ -301,27 +304,27 @@ function writeMessage (state, payload, messageBuffer) {
       case TOK_EE:
         dh.dh(DhResult, state.esk, state.re)
         symmetricState.mixKey(state.symmetricState, DhResult)
-        sodium.sodium_memzero(DhResult)
+        sodium_memzero(DhResult)
         break
       case TOK_ES:
         if (state.role === INITIATOR) dh.dh(DhResult, state.esk, state.rs)
         else dh.dh(DhResult, state.ssk, state.re)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
-        sodium.sodium_memzero(DhResult)
+        sodium_memzero(DhResult)
         break
       case TOK_SE:
         if (state.role === INITIATOR) dh.dh(DhResult, state.ssk, state.re)
         else dh.dh(DhResult, state.esk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
-        sodium.sodium_memzero(DhResult)
+        sodium_memzero(DhResult)
         break
       case TOK_SS:
         dh.dh(DhResult, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
-        sodium.sodium_memzero(DhResult)
+        sodium_memzero(DhResult)
         break
 
       default:
@@ -335,8 +338,8 @@ function writeMessage (state, payload, messageBuffer) {
   writeMessage.bytes = moffset
 
   if (state.messagePatterns.length === 0) {
-    var tx = sodium.sodium_malloc(cipherState.STATELEN)
-    var rx = sodium.sodium_malloc(cipherState.STATELEN)
+    var tx = sodium_malloc(cipherState.STATELEN)
+    var rx = sodium_malloc(cipherState.STATELEN)
     symmetricState.split(state.symmetricState, tx, rx)
 
     return { tx, rx }
@@ -362,7 +365,7 @@ function readMessage (state, message, payloadBuffer) {
         assert(message.byteLength - moffset >= dh.PKLEN)
 
         // PKLEN instead of DHLEN since they are different in out case
-        state.re = sodium.sodium_malloc(dh.PKLEN)
+        state.re = sodium_malloc(dh.PKLEN)
         state.re.set(message.subarray(moffset, moffset + dh.PKLEN))
         moffset += dh.PKLEN
 
@@ -372,7 +375,7 @@ function readMessage (state, message, payloadBuffer) {
 
       case TOK_S:
         assert(state.rs == null)
-        state.rs = sodium.sodium_malloc(dh.PKLEN)
+        state.rs = sodium_malloc(dh.PKLEN)
 
         var bytes = 0
         if (symmetricState._hasKey(state.symmetricState)) {
@@ -395,27 +398,27 @@ function readMessage (state, message, payloadBuffer) {
       case TOK_EE:
         dh.dh(DhResult, state.esk, state.re)
         symmetricState.mixKey(state.symmetricState, DhResult)
-        sodium.sodium_memzero(DhResult)
+        sodium_memzero(DhResult)
         break
       case TOK_ES:
         if (state.role === INITIATOR) dh.dh(DhResult, state.esk, state.rs)
         else dh.dh(DhResult, state.ssk, state.re)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
-        sodium.sodium_memzero(DhResult)
+        sodium_memzero(DhResult)
         break
       case TOK_SE:
         if (state.role === INITIATOR) dh.dh(DhResult, state.ssk, state.re)
         else dh.dh(DhResult, state.esk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
-        sodium.sodium_memzero(DhResult)
+        sodium_memzero(DhResult)
         break
       case TOK_SS:
         dh.dh(DhResult, state.ssk, state.rs)
 
         symmetricState.mixKey(state.symmetricState, DhResult)
-        sodium.sodium_memzero(DhResult)
+        sodium_memzero(DhResult)
         break
 
       default:
@@ -429,8 +432,8 @@ function readMessage (state, message, payloadBuffer) {
   readMessage.bytes = symmetricState.decryptAndHash.bytesWritten
 
   if (state.messagePatterns.length === 0) {
-    var tx = sodium.sodium_malloc(cipherState.STATELEN)
-    var rx = sodium.sodium_malloc(cipherState.STATELEN)
+    var tx = sodium_malloc(cipherState.STATELEN)
+    var rx = sodium_malloc(cipherState.STATELEN)
     symmetricState.split(state.symmetricState, rx, tx)
 
     return { tx, rx }
@@ -440,39 +443,39 @@ readMessage.bytes = 0
 
 function destroy (state) {
   if (state.symmetricState != null) {
-    sodium.sodium_free(state.symmetricState)
+    sodium_free(state.symmetricState)
     state.symmetricState = null
   }
 
   state.role = null
 
   if (state.spk != null) {
-    sodium.sodium_free(state.spk)
+    sodium_free(state.spk)
     state.spk = null
   }
 
   if (state.ssk != null) {
-    sodium.sodium_free(state.ssk)
+    sodium_free(state.ssk)
     state.ssk = null
   }
 
   if (state.epk != null) {
-    sodium.sodium_free(state.epk)
+    sodium_free(state.epk)
     state.epk = null
   }
 
   if (state.esk != null) {
-    sodium.sodium_free(state.esk)
+    sodium_free(state.esk)
     state.esk = null
   }
 
   if (state.rs != null) {
-    sodium.sodium_free(state.rs)
+    sodium_free(state.rs)
     state.rs = null
   }
 
   if (state.re != null) {
-    sodium.sodium_free(state.re)
+    sodium_free(state.re)
     state.re = null
   }
 
@@ -481,7 +484,7 @@ function destroy (state) {
 
 function keygen (obj, sk) {
   if (!obj) {
-    obj = { publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN) }
+    obj = { publicKey: sodium_malloc(PKLEN), secretKey: sodium_malloc(SKLEN) }
     return keygen(obj)
   }
 
@@ -494,7 +497,7 @@ function keygen (obj, sk) {
 }
 
 function seedKeygen (seed) {
-  var obj = { publicKey: sodium.sodium_malloc(PKLEN), secretKey: sodium.sodium_malloc(SKLEN) }
+  var obj = { publicKey: sodium_malloc(PKLEN), secretKey: sodium_malloc(SKLEN) }
   dh.generateSeedKeypair(obj.publicKey, obj.secretKey, seed)
   return obj
 }

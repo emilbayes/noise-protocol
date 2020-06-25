@@ -12,9 +12,9 @@ test('N pattern', function (assert) {
 
   var splitClient = noise.writeMessage(client, Buffer.from('Hello world'), clientTx)
   assert.ok(noise.writeMessage.bytes > 11)
-  assert.false(clientTx.includes('Hello world'))
-  assert.false(clientTx.includes(client.rs))
-  assert.false(clientTx.includes(client.esk))
+  assert.false(Buffer.from(clientTx).includes(Buffer.from('Hello world')))
+  assert.false(Buffer.from(clientTx).includes(Buffer.from(client.rs)))
+  assert.false(Buffer.from(clientTx).includes(Buffer.from(client.esk)))
   var splitServer = noise.readMessage(server, clientTx.subarray(0, noise.writeMessage.bytes), serverRx)
   assert.equal(noise.readMessage.bytes, 11)
 
