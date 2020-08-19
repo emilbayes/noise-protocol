@@ -7,7 +7,7 @@
     "clone": "^2.1.2",
     "hmac-blake2b": "^2.0.0",
     "nanoassert": "^2.0.0",
-    "sodium-universal": "^3.0.1"
+    "sodium-universal": "^3.0.2"
   },
   "devDependencies": {
     "browserify": "^16.5.1",
