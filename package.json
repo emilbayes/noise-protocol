@@ -1,6 +1,6 @@
 {
   "name": "noise-protocol",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Javascript implementation of the Noise Protocol Framework based on libsodium",
   "main": "index.js",
   "dependencies": {
