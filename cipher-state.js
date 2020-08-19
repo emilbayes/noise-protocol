@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 const { sodium_memzero } = require('sodium-universal/memory')
-const { sodium_memcmp, sodium_is_zero } = require('sodium-universal/crypto_verify')
-const { sodium_increment } = require('sodium-universal/utils')
+const { sodium_increment, sodium_memcmp, sodium_is_zero } = require('sodium-universal/helpers')
 
 var assert = require('nanoassert')
 var cipher = require('./cipher')

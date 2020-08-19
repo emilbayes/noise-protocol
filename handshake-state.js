@@ -1,12 +1,10 @@
 /* eslint-disable camelcase */
-const { sodium_malloc, sodium_memzero } = require('sodium-universal/memory')
+const { sodium_malloc, sodium_memzero, sodium_free } = require('sodium-universal/memory')
 const assert = require('nanoassert')
 const clone = require('clone')
 const symmetricState = require('./symmetric-state')
 const cipherState = require('./cipher-state')
 const dh = require('./dh')
-
-function sodium_free () {}
 
 const PKLEN = dh.PKLEN
 const SKLEN = dh.SKLEN
