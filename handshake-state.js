@@ -196,7 +196,7 @@ function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
 
   var state = new HandshakeState()
 
-  var protocolName = new TextEncoder('utf8').encode(`Noise_${handshakePattern}_25519_ChaChaPoly_BLAKE2b`)
+  var protocolName = Uint8Array.from(`Noise_${handshakePattern}_25519_ChaChaPoly_BLAKE2b`, toCharCode)
 
   symmetricState.initializeSymmetric(state.symmetricState, protocolName)
   symmetricState.mixHash(state.symmetricState, prologue)
@@ -498,4 +498,8 @@ function seedKeygen (seed) {
   var obj = { publicKey: sodium_malloc(PKLEN), secretKey: sodium_malloc(SKLEN) }
   dh.generateSeedKeypair(obj.publicKey, obj.secretKey, seed)
   return obj
+}
+
+function toCharCode (s) {
+  return s.charCodeAt(0)
 }
