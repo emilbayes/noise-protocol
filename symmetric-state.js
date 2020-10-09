@@ -6,7 +6,7 @@ var cipherState = require('./cipher-state')
 module.exports = (hash) => {
   const STATELEN = hash.HASHLEN + hash.HASHLEN + cipherState.STATELEN
   const HASHLEN = hash.HASHLEN
-  
+
   const CHAINING_KEY_BEGIN = 0
   const CHAINING_KEY_END = hash.HASHLEN
   const HASH_BEGIN = CHAINING_KEY_END
@@ -17,21 +17,21 @@ module.exports = (hash) => {
   function initializeSymmetric (state, protocolName) {
     assert(state.byteLength === STATELEN)
     assert(protocolName.byteLength != null)
-  
+
     sodium_memzero(state)
     if (protocolName.byteLength <= HASHLEN) state.set(protocolName, HASH_BEGIN)
     else hash.hash(state.subarray(HASH_BEGIN, HASH_END), [protocolName])
-  
+
     state.subarray(CHAINING_KEY_BEGIN, CHAINING_KEY_END).set(state.subarray(HASH_BEGIN, HASH_END))
-  
+
     cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), null)
   }
-  
+
   var TempKey = sodium_malloc(HASHLEN)
   function mixKey (state, inputKeyMaterial, dhlen, pklen) {
     assert(state.byteLength === STATELEN)
     assert(inputKeyMaterial.byteLength != null)
-  
+
     hash.hkdf(
       state.subarray(CHAINING_KEY_BEGIN, CHAINING_KEY_END),
       TempKey,
@@ -41,59 +41,59 @@ module.exports = (hash) => {
       dhlen,
       pklen
     )
-  
+
     // HASHLEN is always 64 here, so we truncate to 32 bytes per the spec
     cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), TempKey.subarray(0, 32))
     sodium_memzero(TempKey)
   }
-  
+
   function mixHash (state, data) {
     assert(state.byteLength === STATELEN)
-  
+
     var h = state.subarray(HASH_BEGIN, HASH_END)
-  
+
     hash.hash(h, [h, data])
   }
-  
+
   var TempHash = sodium_malloc(HASHLEN)
   function mixKeyAndHash (state, inputKeyMaterial, dhlen, pklen) {
     assert(state.byteLength === STATELEN)
     assert(inputKeyMaterial.byteLength != null)
-  
+
     hash.hkdf(
       state.subarray(CHAINING_KEY_BEGIN, CHAINING_KEY_END),
       TempHash,
       TempKey,
       state.subarray(CHAINING_KEY_BEGIN, CHAINING_KEY_END),
       inputKeyMaterial,
-      dhlen, 
+      dhlen,
       pklen
     )
-  
+
     mixHash(state, TempHash)
     sodium_memzero(TempHash)
-  
+
     // HASHLEN is always 64 here, so we truncate to 32 bytes per the spec
     cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), TempKey.subarray(0, 32))
     sodium_memzero(TempKey)
   }
-  
+
   function getHandshakeHash (state, out) {
     assert(state.byteLength === STATELEN)
     assert(out.byteLength === HASHLEN)
-  
+
     out.set(state.subarray(HASH_BEGIN, HASH_END))
   }
-  
+
   // ciphertext is the output here
   function encryptAndHash (state, ciphertext, plaintext) {
     assert(state.byteLength === STATELEN)
     assert(ciphertext.byteLength != null)
     assert(plaintext.byteLength != null)
-  
+
     var cstate = state.subarray(CIPHER_BEGIN, CIPHER_END)
     var h = state.subarray(HASH_BEGIN, HASH_END)
-  
+
     cipherState.encryptWithAd(cstate, ciphertext, h, plaintext)
     encryptAndHash.bytesRead = cipherState.encryptWithAd.bytesRead
     encryptAndHash.bytesWritten = cipherState.encryptWithAd.bytesWritten
@@ -101,16 +101,16 @@ module.exports = (hash) => {
   }
   encryptAndHash.bytesRead = 0
   encryptAndHash.bytesWritten = 0
-  
+
   // plaintext is the output here
   function decryptAndHash (state, plaintext, ciphertext) {
     assert(state.byteLength === STATELEN)
     assert(plaintext.byteLength != null)
     assert(ciphertext.byteLength != null)
-  
+
     var cstate = state.subarray(CIPHER_BEGIN, CIPHER_END)
     var h = state.subarray(HASH_BEGIN, HASH_END)
-  
+
     cipherState.decryptWithAd(cstate, plaintext, h, ciphertext)
     decryptAndHash.bytesRead = cipherState.decryptWithAd.bytesRead
     decryptAndHash.bytesWritten = cipherState.decryptWithAd.bytesWritten
@@ -118,7 +118,7 @@ module.exports = (hash) => {
   }
   decryptAndHash.bytesRead = 0
   decryptAndHash.bytesWritten = 0
-  
+
   var TempKey1 = sodium_malloc(HASHLEN)
   var TempKey2 = sodium_malloc(HASHLEN)
   var zerolen = new Uint8Array(0)
@@ -126,7 +126,7 @@ module.exports = (hash) => {
     assert(state.byteLength === STATELEN)
     assert(cipherstate1.byteLength === cipherState.STATELEN)
     assert(cipherstate2.byteLength === cipherState.STATELEN)
-  
+
     hash.hkdf(
       TempKey1,
       TempKey2,
@@ -136,14 +136,14 @@ module.exports = (hash) => {
       dhlen,
       pklen
     )
-  
+
     // HASHLEN is always 64 here, so we truncate to 32 bytes per the spec
     cipherState.initializeKey(cipherstate1, TempKey1.subarray(0, 32))
     cipherState.initializeKey(cipherstate2, TempKey2.subarray(0, 32))
     sodium_memzero(TempKey1)
     sodium_memzero(TempKey2)
   }
-  
+
   function _hasKey (state) {
     return cipherState.hasKey(state.subarray(CIPHER_BEGIN, CIPHER_END))
   }

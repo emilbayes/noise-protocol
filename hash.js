@@ -18,16 +18,16 @@ module.exports = (dh) => {
     assert(out3 == null ? true : out3.byteLength === HASHLEN)
     assert(chainingKey.byteLength === HASHLEN)
     assert([0, 32, dh.DHLEN, dh.PKLEN].includes(inputKeyMaterial.byteLength))
-  
+
     sodium_memzero(TempKey)
     hmac(TempKey, chainingKey, [inputKeyMaterial])
     hmac(out1, TempKey, [Byte0x01])
     hmac(out2, TempKey, [out1, Byte0x02])
-  
+
     if (out3 != null) {
       hmac(out3, TempKey, [out2, Byte0x03])
     }
-  
+
     sodium_memzero(TempKey)
   }
 

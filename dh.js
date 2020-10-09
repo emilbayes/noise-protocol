@@ -8,12 +8,14 @@ var DHLEN = crypto_scalarmult_BYTES
 var PKLEN = crypto_scalarmult_BYTES
 var SKLEN = crypto_scalarmult_SCALARBYTES
 var SEEDLEN = crypto_kx_SEEDBYTES
+var ALG = '25519'
 
 module.exports = {
   DHLEN,
   PKLEN,
   SKLEN,
   SEEDLEN,
+  ALG,
   generateKeypair,
   generateSeedKeypair,
   dh
