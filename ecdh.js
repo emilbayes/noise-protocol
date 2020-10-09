@@ -9,7 +9,7 @@ const prime = Buffer.from(
 	"hex"
 )
 const DHLEN = 32
-const PKLEN = 33 // first byte is parity byte
+const PKLEN = 33 // first byte is parity byte 
 const SKLEN = 32
 
 module.exports = {
