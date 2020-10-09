@@ -2,11 +2,27 @@
 const { sodium_malloc, sodium_memzero, sodium_free } = require('sodium-universal/memory')
 const assert = require('nanoassert')
 const clone = require('clone')
-const symmetricState = require('./symmetric-state')
 const cipherState = require('./cipher-state')
 
-module.exports = (dh) => {
+module.exports = ({dh, symmetricState}) => {
   var DhResult = sodium_malloc(dh.DHLEN)
+
+  function HandshakeState () {
+    this.symmetricState = sodium_malloc(symmetricState.STATELEN)
+  
+    this.initiator = null
+  
+    this.spk = null
+    this.ssk = null
+  
+    this.epk = null
+    this.esk = null
+  
+    this.rs = null
+    this.re = null
+  
+    this.messagePatterns = null
+  }
 
   function initialize(handshakePattern, initiator, prologue, s, e, rs, re) {
     assert(Object.keys(PATTERNS).includes(handshakePattern), 'Unsupported handshake pattern')
@@ -162,7 +178,7 @@ module.exports = (dh) => {
     if (state.messagePatterns.length === 0) {
       var tx = sodium_malloc(cipherState.STATELEN)
       var rx = sodium_malloc(cipherState.STATELEN)
-      symmetricState.split(state.symmetricState, tx, rx)
+      symmetricState.split(state.symmetricState, tx, rx, dh.DHLEN, dh.PKLEN)
 
       return { tx, rx }
     }
@@ -256,7 +272,7 @@ module.exports = (dh) => {
     if (state.messagePatterns.length === 0) {
       var tx = sodium_malloc(cipherState.STATELEN)
       var rx = sodium_malloc(cipherState.STATELEN)
-      symmetricState.split(state.symmetricState, rx, tx)
+      symmetricState.split(state.symmetricState, rx, tx, dh.DHLEN, dh.PKLEN)
   
       return { tx, rx }
     }
@@ -294,23 +310,6 @@ module.exports = (dh) => {
     SKLEN: dh.SKLEN,
     PKLEN: dh.PKLEN,
   })
-}
-
-function HandshakeState () {
-  this.symmetricState = sodium_malloc(symmetricState.STATELEN)
-
-  this.initiator = null
-
-  this.spk = null
-  this.ssk = null
-
-  this.epk = null
-  this.esk = null
-
-  this.rs = null
-  this.re = null
-
-  this.messagePatterns = null
 }
 
 const INITIATOR = Symbol('initiator')
