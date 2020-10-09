@@ -185,6 +185,16 @@ as you are aware of the security implication of either choice. For initiator and
 responder, `tx` and `rx` are opposite so a responders `rx` is equal to an
 initiators `tx`.
 
+### Custom algorithms
+
+You can customise the handshake state by calling `noise.createHandshake(algs)`
+with `algs = { dh, hash, cipher, cipherState, symmetricState }`. Please refer
+to the respective implementations in the source to see how to swap pieces.
+Please note that this is dangerous, unless you've read the noise specification
+very carefully and know what you are doing. `createHandshake` will then return
+a new `initialize` function from which you can create start handshakes with
+your custom algorithms.
+
 ## Install
 
 ```sh

@@ -8,27 +8,33 @@ const {
   crypto_aead_chacha20poly1305_ietf_decrypt
 } = require('sodium-universal/crypto_aead')
 
-var assert = require('nanoassert')
+const assert = require('nanoassert')
 
-var KEYLEN = 32
-var NONCELEN = 8
-var MACLEN = 16
+const KEYLEN = 32
+const NONCELEN = 8
+const MACLEN = 16
+const ALG = 'ChaChaPoly'
+
+const maxnonce = new Uint8Array(8).fill(0xff)
+const zerolen = new Uint8Array(0)
+const zeros = new Uint8Array(32)
 
 assert(crypto_aead_chacha20poly1305_ietf_KEYBYTES === KEYLEN)
 // 16 bytes are cut off in the following functions
 assert(crypto_aead_chacha20poly1305_ietf_NPUBBYTES === 4 + NONCELEN)
 assert(crypto_aead_chacha20poly1305_ietf_ABYTES === MACLEN)
 
-module.exports = {
+module.exports = () => ({
   KEYLEN,
   NONCELEN,
   MACLEN,
+  ALG,
   encrypt,
   decrypt,
   rekey
-}
+})
 
-var ElongatedNonce = sodium_malloc(crypto_aead_chacha20poly1305_ietf_NPUBBYTES)
+const ElongatedNonce = sodium_malloc(crypto_aead_chacha20poly1305_ietf_NPUBBYTES)
 function encrypt (out, k, n, ad, plaintext) {
   assert(out.byteLength >= plaintext.byteLength + MACLEN, 'output buffer must be at least plaintext plus MACLEN bytes long')
   assert(k.byteLength === KEYLEN)
@@ -63,11 +69,7 @@ function decrypt (out, k, n, ad, ciphertext) {
 decrypt.bytesWritten = 0
 decrypt.bytesRead = 0
 
-var maxnonce = new Uint8Array(8).fill(0xff)
-var zerolen = new Uint8Array(0)
-var zeros = new Uint8Array(32)
-
-var IntermediateKey = sodium_malloc(KEYLEN + MACLEN)
+const IntermediateKey = sodium_malloc(KEYLEN + MACLEN)
 sodium_memzero(IntermediateKey)
 function rekey (out, k) {
   assert(out.byteLength === KEYLEN)

@@ -1,4 +1,4 @@
-var noise = require('.')
+var noise = require('./index2')
 
 var sClient = noise.keygen()
 var sServer = noise.keygen()
