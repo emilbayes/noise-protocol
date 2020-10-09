@@ -1,4 +1,3 @@
-const { assert } = require("console")
 const crypto = require("crypto")
 const sodium = require("sodium-universal")
 const assert = require("nanoassert")
@@ -10,8 +9,17 @@ const prime = Buffer.from(
 	"hex"
 )
 const DHLEN = 32
-const PKLEN = 32 // typically 33, but we always remove parity byte
+const PKLEN = 33 // first byte is parity byte
 const SKLEN = 32
+
+module.exports = {
+  DHLEN,
+  PKLEN,
+  SKLEN,
+  generateKeypair,
+  generateSeedKeypair,
+  dh
+}
 
 function generateKeypair(pk, sk) {
 	assert(pk.byteLength === PKLEN)
@@ -25,10 +33,12 @@ function generateKeypair(pk, sk) {
 		if (res > 0) break
 	}
 
-	// We're allowed to remove first parity-byte because the algorithm above
-	// ensures that it's always the same.
-	pk.fill(dh.getPublicKey(null, "compressed").subarray(1))
-	sk.fill(dh.getPrivateKey())
+	pk.fill(ecdh.getPublicKey(null, "compressed"))
+	sk.fill(ecdh.getPrivateKey())
+}
+
+function generateSeedKeypair(pk, sk) {
+  assert(false, "generateSeedKeypiar not supported for prime256v1")
 }
 
 function dh(output, lsk, pk) {
@@ -36,11 +46,4 @@ function dh(output, lsk, pk) {
 	output.fill(ecdh.computeSecret(pk))
 }
 
-module.exports = {
-	DHLEN,
-	PKLEN,
-	SKLEN,
-	SEEDLEN,
-	generateKeypair,
-	dh,
-}
+
