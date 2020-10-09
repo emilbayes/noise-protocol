@@ -1,1 +1,1 @@
-module.exports = require('./handshake-state')
+module.exports = require('./handshake-state')(require('./dh'))

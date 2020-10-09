@@ -5,11 +5,11 @@ const clone = require('clone')
 const symmetricState = require('./symmetric-state')
 const cipherState = require('./cipher-state')
 
-const setup = (dh) => {
+module.exports = (dh) => {
   var DhResult = sodium_malloc(dh.DHLEN)
   var write = writeMessage(dh, DhResult)
   write.bytes = 0 
-  
+
   var read = readMessage(dh, DhResult)
   read.bytes = 0
 
@@ -22,11 +22,8 @@ const setup = (dh) => {
     seedKeygen: seedKeygen(dh),
     SKLEN: dh.SKLEN,
     PKLEN: dh.PKLEN,
-    override: setup
   })
 }
-
-module.exports = setup(require('./dh'))
 
 function HandshakeState () {
   this.symmetricState = sodium_malloc(symmetricState.STATELEN)
