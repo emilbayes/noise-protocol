@@ -5,7 +5,7 @@ const {
   crypto_aead_chacha20poly1305_ietf_ABYTES
 } = require('sodium-universal/crypto_aead')
 const { randombytes_buf } = require('sodium-universal/randombytes')
-var cipher = require('../cipher')
+var cipher = require('../cipher')()
 var test = require('tape')
 
 test('constants', function (assert) {

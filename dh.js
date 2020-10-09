@@ -2,15 +2,15 @@
 const { crypto_kx_SEEDBYTES, crypto_kx_keypair, crypto_kx_seed_keypair } = require('sodium-universal/crypto_kx')
 const { crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES, crypto_scalarmult } = require('sodium-universal/crypto_scalarmult')
 
-var assert = require('nanoassert')
+const assert = require('nanoassert')
 
-var DHLEN = crypto_scalarmult_BYTES
-var PKLEN = crypto_scalarmult_BYTES
-var SKLEN = crypto_scalarmult_SCALARBYTES
-var SEEDLEN = crypto_kx_SEEDBYTES
-var ALG = '25519'
+const DHLEN = crypto_scalarmult_BYTES
+const PKLEN = crypto_scalarmult_BYTES
+const SKLEN = crypto_scalarmult_SCALARBYTES
+const SEEDLEN = crypto_kx_SEEDBYTES
+const ALG = '25519'
 
-module.exports = {
+module.exports = () => ({
   DHLEN,
   PKLEN,
   SKLEN,
@@ -19,7 +19,7 @@ module.exports = {
   generateKeypair,
   generateSeedKeypair,
   dh
-}
+})
 
 function generateKeypair (pk, sk) {
   assert(pk.byteLength === PKLEN)

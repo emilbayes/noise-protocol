@@ -2,9 +2,8 @@
 const { sodium_malloc, sodium_memzero, sodium_free } = require('sodium-universal/memory')
 const assert = require('nanoassert')
 const clone = require('clone')
-const cipherState = require('./cipher-state')
 
-module.exports = ({ dh, symmetricState }) => {
+function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
   var DhResult = sodium_malloc(dh.DHLEN)
 
   function HandshakeState () {
@@ -37,7 +36,7 @@ module.exports = ({ dh, symmetricState }) => {
 
     var state = new HandshakeState()
 
-    var protocolName = Uint8Array.from(`Noise_${handshakePattern}_${dh.ALG}_ChaChaPoly_BLAKE2b`, toCharCode)
+    var protocolName = Uint8Array.from(`Noise_${handshakePattern}_${dh.ALG}_${cipher.ALG}_${hash.ALG}`, toCharCode)
 
     symmetricState.initializeSymmetric(state.symmetricState, protocolName)
     symmetricState.mixHash(state.symmetricState, prologue)
@@ -306,6 +305,7 @@ module.exports = ({ dh, symmetricState }) => {
     destroy,
     keygen,
     seedKeygen,
+    createHandshake,
     SKLEN: dh.SKLEN,
     PKLEN: dh.PKLEN
   })
@@ -501,3 +501,5 @@ function destroy (state) {
 function toCharCode (s) {
   return s.charCodeAt(0)
 }
+
+module.exports = createHandshake

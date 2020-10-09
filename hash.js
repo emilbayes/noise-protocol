@@ -7,11 +7,25 @@ const hmacBlake2b = require('hmac-blake2b')
 
 const HASHLEN = 64
 const BLOCKLEN = 128
+const ALG = 'BLAKE2b'
 
 assert(hmacBlake2b.KEYBYTES === BLOCKLEN, 'mismatching hmac BLOCKLEN')
 assert(hmacBlake2b.BYTES === HASHLEN, 'mismatching hmac HASHLEN')
 
-module.exports = (dh) => {
+const TempKey = sodium_malloc(HASHLEN)
+const Byte0x01 = new Uint8Array([0x01])
+const Byte0x02 = new Uint8Array([0x02])
+const Byte0x03 = new Uint8Array([0x03])
+
+module.exports = ({ dh }) => {
+  return {
+    HASHLEN,
+    BLOCKLEN,
+    ALG,
+    hash,
+    hkdf
+  }
+
   function hkdf (out1, out2, out3, chainingKey, inputKeyMaterial) {
     assert(out1.byteLength === HASHLEN)
     assert(out2.byteLength === HASHLEN)
@@ -30,13 +44,6 @@ module.exports = (dh) => {
 
     sodium_memzero(TempKey)
   }
-
-  return {
-    HASHLEN,
-    BLOCKLEN,
-    hash,
-    hkdf
-  }
 }
 
 function hash (out, data) {
@@ -49,8 +56,3 @@ function hash (out, data) {
 function hmac (out, key, data) {
   return hmacBlake2b(out, data, key)
 }
-
-const TempKey = sodium_malloc(HASHLEN)
-const Byte0x01 = new Uint8Array([0x01])
-const Byte0x02 = new Uint8Array([0x02])
-const Byte0x03 = new Uint8Array([0x03])

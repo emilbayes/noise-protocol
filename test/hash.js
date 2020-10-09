@@ -1,4 +1,5 @@
-var hash = require('../hash')
+var dh = require('../dh')()
+var hash = require('../hash')({ dh })
 var test = require('tape')
 
 test('constants', function (assert) {

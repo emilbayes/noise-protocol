@@ -1,9 +1,8 @@
 /* eslint-disable camelcase */
 const { sodium_malloc, sodium_memzero } = require('sodium-universal/memory')
 var assert = require('nanoassert')
-var cipherState = require('./cipher-state')
 
-module.exports = (hash) => {
+module.exports = ({ hash, cipherState }) => {
   const STATELEN = hash.HASHLEN + hash.HASHLEN + cipherState.STATELEN
   const HASHLEN = hash.HASHLEN
 
