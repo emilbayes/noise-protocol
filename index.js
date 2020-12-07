@@ -1,4 +1,4 @@
-const dh = require('./dh')()
+const dh = require('./p256-dh')()
 const hash = require('./hash')({ dh })
 const cipher = require('./cipher')()
 const cipherState = require('./cipher-state')({ cipher })

@@ -31,6 +31,7 @@ test('XX pattern', function (assert) {
 
   assert.same(splitClient.tx, splitServer.rx)
   assert.same(splitClient.rx, splitServer.tx)
+  assert.same(splitClient.handshakeHash, splitServer.handshakeHash)
 
   assert.end()
 })

@@ -20,6 +20,7 @@ test('N pattern', function (assert) {
 
   assert.same(splitClient.tx, splitServer.rx)
   assert.same(splitClient.rx, splitServer.tx)
+  assert.same(splitClient.handshakeHash, splitServer.handshakeHash)
   assert.notSame(splitServer.rx, splitServer.tx)
   assert.notSame(splitClient.rx, splitClient.tx)
 

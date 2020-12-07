@@ -177,9 +177,14 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     if (state.messagePatterns.length === 0) {
       var tx = sodium_malloc(cipherState.STATELEN)
       var rx = sodium_malloc(cipherState.STATELEN)
+      var handshakeHash = Buffer.alloc(hash.HASHLEN)
+
+      symmetricState.getHandshakeHash(state.symmetricState, handshakeHash)
       symmetricState.split(state.symmetricState, tx, rx, dh.DHLEN, dh.PKLEN)
 
-      return { tx, rx }
+      symmetricState.split(state.symmetricState, tx, rx, dh.DHLEN, dh.PKLEN)
+
+      return { tx, rx, handshakeHash }
     }
   }
   writeMessage.bytes = 0
@@ -271,9 +276,14 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     if (state.messagePatterns.length === 0) {
       var tx = sodium_malloc(cipherState.STATELEN)
       var rx = sodium_malloc(cipherState.STATELEN)
+      var handshakeHash = Buffer.alloc(hash.HASHLEN)
+
+      symmetricState.getHandshakeHash(state.symmetricState, handshakeHash)
+      symmetricState.split(state.symmetricState, tx, rx, dh.DHLEN, dh.PKLEN)
+
       symmetricState.split(state.symmetricState, rx, tx, dh.DHLEN, dh.PKLEN)
 
-      return { tx, rx }
+      return { tx, rx, handshakeHash }
     }
   }
   readMessage.bytes = 0
