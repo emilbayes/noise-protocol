@@ -1,6 +1,6 @@
 # `noise-protocol`
 
-[![Build Status](https://travis-ci.org/emilbayes/noise-protocol.svg?branch=master)](https://travis-ci.org/emilbayes/noise-protocol)
+[![Build Status](https://github.com/emilbayes/noise-protocol/actions/workflows/npm.yml/badge.svg?branch=master)](https://github.com/emilbayes/noise-protocol/actions/workflows/npm.yml)
 
 > Javascript implementation of the Noise Protocol Framework based on libsodium
 
