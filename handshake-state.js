@@ -4,7 +4,7 @@ const assert = require('nanoassert')
 const clone = require('clone')
 
 function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
-  var DhResult = sodium_malloc(dh.DHLEN)
+  const DhResult = sodium_malloc(dh.DHLEN)
 
   function HandshakeState () {
     this.symmetricState = sodium_malloc(symmetricState.STATELEN)
@@ -34,9 +34,9 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     assert(rs == null ? true : rs.byteLength === dh.PKLEN, `rs must be ${dh.PKLEN} bytes`)
     assert(re == null ? true : re.byteLength === dh.PKLEN, `re must be ${dh.PKLEN} bytes`)
 
-    var state = new HandshakeState()
+    const state = new HandshakeState()
 
-    var protocolName = Uint8Array.from(`Noise_${handshakePattern}_${dh.ALG}_${cipher.ALG}_${hash.ALG}`, toCharCode)
+    const protocolName = Uint8Array.from(`Noise_${handshakePattern}_${dh.ALG}_${cipher.ALG}_${hash.ALG}`, toCharCode)
 
     symmetricState.initializeSymmetric(state.symmetricState, protocolName)
     symmetricState.mixHash(state.symmetricState, prologue)
@@ -69,12 +69,12 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     }
 
     // hashing
-    var pat = PATTERNS[handshakePattern]
+    const pat = PATTERNS[handshakePattern]
 
-    for (var pattern of clone(pat.premessages)) {
-      var patternRole = pattern.shift()
+    for (const pattern of clone(pat.premessages)) {
+      const patternRole = pattern.shift()
 
-      for (var token of pattern) {
+      for (const token of pattern) {
         switch (token) {
           case TOK_E:
             assert(state.role === patternRole ? state.epk.byteLength != null : state.re.byteLength != null)
@@ -105,14 +105,14 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     assert(payload.byteLength != null)
     assert(messageBuffer.byteLength != null)
 
-    var mpat = state.messagePatterns.shift()
-    var moffset = 0
+    const mpat = state.messagePatterns.shift()
+    let moffset = 0
 
     assert(mpat != null)
 
     assert(state.role === mpat.shift())
 
-    for (var token of mpat) {
+    for (const token of mpat) {
       switch (token) {
         case TOK_E:
           assert(state.epk == null)
@@ -175,8 +175,8 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     writeMessage.bytes = moffset
 
     if (state.messagePatterns.length === 0) {
-      var tx = sodium_malloc(cipherState.STATELEN)
-      var rx = sodium_malloc(cipherState.STATELEN)
+      const tx = sodium_malloc(cipherState.STATELEN)
+      const rx = sodium_malloc(cipherState.STATELEN)
       symmetricState.split(state.symmetricState, tx, rx, dh.DHLEN, dh.PKLEN)
 
       return { tx, rx }
@@ -189,13 +189,13 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     assert(message.byteLength != null)
     assert(payloadBuffer.byteLength != null)
 
-    var mpat = state.messagePatterns.shift()
-    var moffset = 0
+    const mpat = state.messagePatterns.shift()
+    let moffset = 0
 
     assert(mpat != null)
     assert(mpat.shift() !== state.role)
 
-    for (var token of mpat) {
+    for (const token of mpat) {
       switch (token) {
         case TOK_E:
           assert(state.re == null)
@@ -210,11 +210,11 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
 
           break
 
-        case TOK_S:
+        case TOK_S: {
           assert(state.rs == null)
           state.rs = sodium_malloc(dh.PKLEN)
 
-          var bytes = 0
+          let bytes = 0
           if (symmetricState._hasKey(state.symmetricState)) {
             bytes = dh.PKLEN + 16
           } else {
@@ -232,6 +232,7 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
           moffset += symmetricState.decryptAndHash.bytesRead
 
           break
+        }
         case TOK_EE:
           dh.dh(DhResult, state.esk, state.re)
           symmetricState.mixKey(state.symmetricState, DhResult)
@@ -269,8 +270,8 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     readMessage.bytes = symmetricState.decryptAndHash.bytesWritten
 
     if (state.messagePatterns.length === 0) {
-      var tx = sodium_malloc(cipherState.STATELEN)
-      var rx = sodium_malloc(cipherState.STATELEN)
+      const tx = sodium_malloc(cipherState.STATELEN)
+      const rx = sodium_malloc(cipherState.STATELEN)
       symmetricState.split(state.symmetricState, rx, tx, dh.DHLEN, dh.PKLEN)
 
       return { tx, rx }
@@ -293,7 +294,7 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
   }
 
   function seedKeygen (seed) {
-    var obj = { publicKey: sodium_malloc(dh.PKLEN), secretKey: sodium_malloc(dh.SKLEN) }
+    const obj = { publicKey: sodium_malloc(dh.PKLEN), secretKey: sodium_malloc(dh.SKLEN) }
     dh.generateSeedKeypair(obj.publicKey, obj.secretKey, seed)
     return obj
   }
@@ -323,7 +324,7 @@ const TOK_SS = Symbol('es')
 
 // initiator, ->
 // responder, <-
-var PATTERNS = Object.freeze({
+const PATTERNS = Object.freeze({
   N: {
     premessages: [
       [RESPONDER, TOK_S]
@@ -452,7 +453,7 @@ var PATTERNS = Object.freeze({
 })
 
 function sodiumBufferCopy (src) {
-  var buf = sodium_malloc(src.byteLength)
+  const buf = sodium_malloc(src.byteLength)
   buf.set(src)
   return buf
 }

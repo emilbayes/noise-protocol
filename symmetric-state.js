@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 const { sodium_malloc, sodium_memzero } = require('sodium-universal/memory')
-var assert = require('nanoassert')
+const assert = require('nanoassert')
 
 module.exports = ({ hash, cipherState }) => {
   const STATELEN = hash.HASHLEN + hash.HASHLEN + cipherState.STATELEN
@@ -26,7 +26,7 @@ module.exports = ({ hash, cipherState }) => {
     cipherState.initializeKey(state.subarray(CIPHER_BEGIN, CIPHER_END), null)
   }
 
-  var TempKey = sodium_malloc(HASHLEN)
+  const TempKey = sodium_malloc(HASHLEN)
   function mixKey (state, inputKeyMaterial, dhlen, pklen) {
     assert(state.byteLength === STATELEN)
     assert(inputKeyMaterial.byteLength != null)
@@ -49,12 +49,12 @@ module.exports = ({ hash, cipherState }) => {
   function mixHash (state, data) {
     assert(state.byteLength === STATELEN)
 
-    var h = state.subarray(HASH_BEGIN, HASH_END)
+    const h = state.subarray(HASH_BEGIN, HASH_END)
 
     hash.hash(h, [h, data])
   }
 
-  var TempHash = sodium_malloc(HASHLEN)
+  const TempHash = sodium_malloc(HASHLEN)
   function mixKeyAndHash (state, inputKeyMaterial, dhlen, pklen) {
     assert(state.byteLength === STATELEN)
     assert(inputKeyMaterial.byteLength != null)
@@ -90,8 +90,8 @@ module.exports = ({ hash, cipherState }) => {
     assert(ciphertext.byteLength != null)
     assert(plaintext.byteLength != null)
 
-    var cstate = state.subarray(CIPHER_BEGIN, CIPHER_END)
-    var h = state.subarray(HASH_BEGIN, HASH_END)
+    const cstate = state.subarray(CIPHER_BEGIN, CIPHER_END)
+    const h = state.subarray(HASH_BEGIN, HASH_END)
 
     cipherState.encryptWithAd(cstate, ciphertext, h, plaintext)
     encryptAndHash.bytesRead = cipherState.encryptWithAd.bytesRead
@@ -107,8 +107,8 @@ module.exports = ({ hash, cipherState }) => {
     assert(plaintext.byteLength != null)
     assert(ciphertext.byteLength != null)
 
-    var cstate = state.subarray(CIPHER_BEGIN, CIPHER_END)
-    var h = state.subarray(HASH_BEGIN, HASH_END)
+    const cstate = state.subarray(CIPHER_BEGIN, CIPHER_END)
+    const h = state.subarray(HASH_BEGIN, HASH_END)
 
     cipherState.decryptWithAd(cstate, plaintext, h, ciphertext)
     decryptAndHash.bytesRead = cipherState.decryptWithAd.bytesRead
@@ -118,9 +118,9 @@ module.exports = ({ hash, cipherState }) => {
   decryptAndHash.bytesRead = 0
   decryptAndHash.bytesWritten = 0
 
-  var TempKey1 = sodium_malloc(HASHLEN)
-  var TempKey2 = sodium_malloc(HASHLEN)
-  var zerolen = new Uint8Array(0)
+  const TempKey1 = sodium_malloc(HASHLEN)
+  const TempKey2 = sodium_malloc(HASHLEN)
+  const zerolen = new Uint8Array(0)
   function split (state, cipherstate1, cipherstate2, dhlen, pklen) {
     assert(state.byteLength === STATELEN)
     assert(cipherstate1.byteLength === cipherState.STATELEN)

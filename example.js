@@ -1,24 +1,24 @@
-var noise = require('./index2')
+const noise = require('./index2')
 
-var sClient = noise.keygen()
-var sServer = noise.keygen()
+const sClient = noise.keygen()
+const sServer = noise.keygen()
 
-var client = noise.initialize('KK', true, Buffer.alloc(0), sClient, null, sServer.publicKey)
-var server = noise.initialize('KK', false, Buffer.alloc(0), sServer, null, sClient.publicKey)
+const client = noise.initialize('KK', true, Buffer.alloc(0), sClient, null, sServer.publicKey)
+const server = noise.initialize('KK', false, Buffer.alloc(0), sServer, null, sClient.publicKey)
 
-var clientTx = Buffer.alloc(128)
-var serverTx = Buffer.alloc(128)
+const clientTx = Buffer.alloc(128)
+const serverTx = Buffer.alloc(128)
 
-var clientRx = Buffer.alloc(128)
-var serverRx = Buffer.alloc(128)
+const clientRx = Buffer.alloc(128)
+const serverRx = Buffer.alloc(128)
 
 // -> e, es, ss
 noise.writeMessage(client, Buffer.alloc(0), clientTx)
 noise.readMessage(server, clientTx.subarray(0, noise.writeMessage.bytes), serverRx)
 
 // <- e, ee, se
-var serverSplit = noise.writeMessage(server, Buffer.alloc(0), serverTx)
-var clientSplit = noise.readMessage(client, serverTx.subarray(0, noise.writeMessage.bytes), clientRx)
+const serverSplit = noise.writeMessage(server, Buffer.alloc(0), serverTx)
+const clientSplit = noise.readMessage(client, serverTx.subarray(0, noise.writeMessage.bytes), clientRx)
 
 noise.destroy(client)
 noise.destroy(server)

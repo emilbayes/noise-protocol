@@ -1,6 +1,6 @@
-var dh = require('../dh')()
-var hash = require('../hash')({ dh })
-var test = require('tape')
+const dh = require('../dh')()
+const hash = require('../hash')({ dh })
+const test = require('tape')
 
 test('constants', function (assert) {
   assert.ok(hash.HASHLEN === 32 || hash.HASHLEN === 64, 'HASHLEN conforms to Noise Protocol')

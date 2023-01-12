@@ -1,5 +1,5 @@
-var dh = require('../dh')()
-var test = require('tape')
+const dh = require('../dh')()
+const test = require('tape')
 
 test('constants', function (assert) {
   assert.ok(dh.DHLEN >= 32, 'DHLEN conforms to Noise Protocol')
@@ -7,9 +7,9 @@ test('constants', function (assert) {
 })
 
 test('generateKeypair', function (assert) {
-  var kp1 = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
-  var kp2 = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
-  var kp3 = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
+  const kp1 = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
+  const kp2 = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
+  const kp3 = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
 
   dh.generateKeypair(kp2.pk, kp2.sk)
   dh.generateKeypair(kp3.pk, kp3.sk)
@@ -29,14 +29,14 @@ test('generateKeypair', function (assert) {
 })
 
 test('initiator / responder', function (assert) {
-  var server = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
-  var client = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
+  const server = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
+  const client = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
 
   dh.generateKeypair(server.pk, server.sk)
   dh.generateKeypair(client.pk, client.sk)
 
-  var dhc = Buffer.alloc(dh.DHLEN)
-  var dhs = Buffer.alloc(dh.DHLEN)
+  const dhc = Buffer.alloc(dh.DHLEN)
+  const dhs = Buffer.alloc(dh.DHLEN)
 
   dh.dh(dhc, client.sk, server.pk)
   dh.dh(dhs, server.sk, client.pk)
@@ -70,11 +70,11 @@ const badKeys = [
 ]
 
 test('bad keys', function (assert) {
-  var keypair = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
+  const keypair = { sk: Buffer.alloc(dh.SKLEN), pk: Buffer.alloc(dh.PKLEN) }
   dh.generateKeypair(keypair.pk, keypair.sk)
 
-  var dho = Buffer.alloc(dh.DHLEN)
-  for (var i = 0; i < badKeys.length; i++) {
+  const dho = Buffer.alloc(dh.DHLEN)
+  for (let i = 0; i < badKeys.length; i++) {
     assert.throws(() => dh.dh(dho, keypair.sk, badKeys[i]))
   }
 
