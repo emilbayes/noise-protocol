@@ -5,16 +5,16 @@
   "main": "index.js",
   "dependencies": {
     "clone": "^2.1.2",
-    "hmac-blake2b": "^2.0.0",
+    "hmac-blake2b": "^2.0.2",
     "nanoassert": "^2.0.0",
-    "sodium-universal": "^3.0.2"
+    "sodium-universal": "^4.0.0"
   },
   "devDependencies": {
-    "browserify": "^16.5.1",
-    "c8": "^7.1.2",
-    "standard": "^14.3.4",
-    "tape": "^5.0.0",
-    "tape-run": "^7.0.0"
+    "browserify": "^17.0.0",
+    "c8": "^7.12.0",
+    "standard": "^17.0.0",
+    "tape": "^5.6.1",
+    "tape-run": "^10.0.0"
   },
   "scripts": {
     "pretest": "standard",
