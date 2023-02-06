@@ -19,7 +19,7 @@
   "scripts": {
     "pretest": "standard",
     "test": "tape 'test/**/*.js'",
-    "posttest": "browserify --debug test/**/*.js | tape-run",
+    "posttest": "browserify test/*.js test/patterns/*.js | tape-run",
     "coverage": "c8 npm test"
   },
   "repository": {
