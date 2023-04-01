@@ -20,11 +20,20 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     this.rs = null
     this.re = null
 
+    this.psks = []
     this.messagePatterns = null
   }
 
+  function getPatternAndPskModifier (handshakePattern) {
+    const match = handshakePattern.match(/^([A-Z]*)(.*)?$/)
+    const pattern = match[1];
+    const modifiers = match[2];
+    return { pattern, modifiers: modifiers ? modifiers.split('+') : [] }
+  }
+
   function initialize (handshakePattern, initiator, prologue, s, e, rs, re) {
-    assert(Object.keys(PATTERNS).includes(handshakePattern), 'Unsupported handshake pattern')
+    const patternModifier = getPatternAndPskModifier(handshakePattern)
+    assert(Object.keys(PATTERNS).includes(patternModifier.pattern), 'Unsupported handshake pattern')
     assert(typeof initiator === 'boolean', 'Initiator must be a boolean')
     assert(prologue.byteLength != null, 'prolouge must be a Buffer')
 
@@ -69,7 +78,7 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     }
 
     // hashing
-    const pat = PATTERNS[handshakePattern]
+    const pat = PATTERNS[patternModifier.pattern]
 
     for (const pattern of clone(pat.premessages)) {
       const patternRole = pattern.shift()
@@ -92,12 +101,37 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
 
     state.messagePatterns = clone(pat.messagePatterns)
 
+    for(const modifier of patternModifier.modifiers) {
+      const match = modifier.match(/^psk(\d)$/);
+      assert(match !== null, `Only psk# modifiers supported, found ${modifier}`);
+      const psk = match[1] * 1
+      assert(state.messagePatterns.length >= Math.floor(psk / 2), 'Bad psk modifier')
+      if (psk === 0) {
+        const value = state.messagePatterns[0][0]
+        state.messagePatterns[0].unshift(value)
+        state.messagePatterns[0][1] = TOK_PSK
+      } else state.messagePatterns[psk - 1].push(TOK_PSK)
+      state.pskCount = (state.pskCount || 0) + 1
+    }
+
     assert(state.messagePatterns.filter(p => p[0] === INITIATOR).some(p => p.includes(TOK_S))
       ? (state.spk !== null && state.ssk !== null)
       : true, // Default if none is found
     'This handshake pattern requires a static keypair')
 
     return state
+  }
+
+  function setPsks (state, ...psks) {
+    assert(
+      psks.length === state.pskCount,
+      'Cannot specify more psks that required'
+    )
+    assert(
+      psks.every((psk) => psk.byteLength != null),
+      'PSKs must be Buffers'
+    )
+    state.psks = psks
   }
 
   function writeMessage (state, payload, messageBuffer) {
@@ -127,6 +161,7 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
           moffset += state.epk.byteLength
 
           symmetricState.mixHash(state.symmetricState, state.epk)
+          if(state.pskCount > 0) symmetricState.mixKey(state.symmetricState, state.epk)
 
           break
 
@@ -162,6 +197,12 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
 
           symmetricState.mixKey(state.symmetricState, DhResult)
           sodium_memzero(DhResult)
+          break
+        case TOK_PSK:
+          symmetricState.mixKeyAndHash(
+            state.symmetricState,
+            state.psks.shift()
+          )
           break
 
         default:
@@ -207,6 +248,7 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
           moffset += dh.PKLEN
 
           symmetricState.mixHash(state.symmetricState, state.re)
+          if(state.pskCount > 0) symmetricState.mixKey(state.symmetricState, state.re)
 
           break
 
@@ -258,6 +300,12 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
           symmetricState.mixKey(state.symmetricState, DhResult)
           sodium_memzero(DhResult)
           break
+        case TOK_PSK:
+          symmetricState.mixKeyAndHash(
+            state.symmetricState,
+            state.psks.shift()
+          )
+          break
 
         default:
           throw new Error('Invalid message pattern')
@@ -307,6 +355,7 @@ function createHandshake ({ dh, hash, cipher, symmetricState, cipherState }) {
     keygen,
     seedKeygen,
     createHandshake,
+    setPsks,
     SKLEN: dh.SKLEN,
     PKLEN: dh.PKLEN
   })
@@ -321,6 +370,7 @@ const TOK_ES = Symbol('es')
 const TOK_SE = Symbol('se')
 const TOK_EE = Symbol('ee')
 const TOK_SS = Symbol('es')
+const TOK_PSK = Symbol('psk')
 
 // initiator, ->
 // responder, <-

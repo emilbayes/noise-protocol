@@ -1,8 +1,11 @@
 # `noise-protocol`
 
-[![Build Status](https://github.com/emilbayes/noise-protocol/actions/workflows/npm.yml/badge.svg?branch=master)](https://github.com/emilbayes/noise-protocol/actions/workflows/npm.yml)
-
 > Javascript implementation of the Noise Protocol Framework based on libsodium
+
+## Added in this fork
+
+- SHA256 hashing
+- PSK support
 
 :rotating_light: :warning: :rotating_light: BETA :rotating_light: :warning: :rotating_light:
 

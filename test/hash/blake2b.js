@@ -1,5 +1,5 @@
-const dh = require('../dh')()
-const hash = require('../hash')({ dh })
+const dh = require('../../dh')()
+const hash = require('../../hash/blake2b')({ dh })
 const test = require('tape')
 
 test('constants', function (assert) {
